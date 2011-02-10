@@ -1,0 +1,2 @@
+gholt@saio:~$ (echo 'set terminal gif size 1024, 768; plot "-" title "Test" with lines;'; awk -F , '/^[0-9]/ {print $1 - 1283356558.52, $3}' report.csv) | gnuplot > test.gif
+gholt@saio:~$ (echo 'set terminal dumb 80 24; plot "-" title "Test" with lines;'; awk -F , '/^[0-9]/ {print $1 - 1283356558.52, $3}' report.csv) | gnuplot

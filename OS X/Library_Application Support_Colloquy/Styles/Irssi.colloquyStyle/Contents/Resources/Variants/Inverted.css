@@ -1,0 +1,46 @@
+/* Copyright (c) 2006 Koen Vervloesem */
+body {
+	color: #000;
+	background-color: white;
+}
+
+a, a:link, a:visited, a:active {
+	color: #000;
+}
+
+.envelope > .member {
+	color: #000;
+}
+
+.envelope > .member:before {
+	color: #000;
+}
+
+.envelope > .member:after {
+	color: #000;
+}
+
+.member.self { 
+	color: #000; 
+}
+
+.highlight > .member {
+	color: #cc0;
+}
+
+.envelope.highlight {
+	background-color: #fff;
+}
+
+.event.parted .hostmask {
+	color: #000;
+}
+
+.event .member {
+	color: #000 !important;
+}
+
+.action > .member {
+	color: #000 !important;
+}
+

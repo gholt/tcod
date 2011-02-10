@@ -1,0 +1,4 @@
+* preview afstemmen op mogelijkheden stijl
+* font instelbaar maken
+* custom font werkt enkel bij nicknames, niet bij tekst zelf?
+* buddy's join/leave wel laten zien, en de rest verbergen

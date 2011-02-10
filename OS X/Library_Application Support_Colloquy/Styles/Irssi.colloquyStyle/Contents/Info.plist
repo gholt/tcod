@@ -1,0 +1,563 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleGetInfoString</key>
+	<string>Irssi Colloquy Chat Style v0.9.6</string>
+	<key>CFBundleIdentifier</key>
+	<string>eu.vervloesem.colloquy.style.irssi</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>Irssi</string>
+	<key>CFBundlePackageType</key>
+	<string>coSt</string>
+	<key>CFBundleShortVersionString</key>
+	<string>0.9.6</string>
+	<key>CFBundleVersion</key>
+	<string>0.9.6</string>
+	<key>JVStyleDescription</key>
+	<string>IRC style loosely based on irssi's default theme</string>
+	<key>NSHumanReadableCopyright</key>
+	<string>Copyright 2006 Koen Vervloesem</string>
+	<key>JVStyleOptions</key>
+	<array>
+		<dict>
+			<key>style</key>
+			<string>.highlight &gt; a.member { color: %@ !important; }</string>
+			<key>default</key>
+			<string>#ff0</string>
+			<key>description</key>
+			<string>Member highlight</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+                <dict> 
+                       <key>style</key>
+                        <string>span.highlight { color: %@ !important; }</string>
+                        <key>default</key>
+                        <string>#ff0</string>
+                        <key>description</key>
+                        <string>Word highlight</string>
+                        <key>type</key>
+                        <string>color</string>
+                </dict>
+		<dict>
+			<key>style</key>
+			<string>.envelope.highlight { background-color: %@ !important; }</string>
+			<key>default</key>
+			<string>rgba(255, 0, 0, 0.6)</string>
+			<key>description</key>
+			<string>Background highlight</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>.member.self { color: %@ !important; }</string>
+			<key>default</key>
+			<string>#fff</string>
+			<key>description</key>
+			<string>Your name</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>.error, .conerror { color: %@ !important; }</string>
+			<key>default</key>
+			<string>#c00</string>
+			<key>description</key>
+			<string>Errors</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>.event .hostmask { color: %@ !important; }</string>
+			<key>default</key>
+			<string>#0cc</string>
+			<key>description</key>
+			<string>Hostmasks</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<array>
+				<string>.hostmask { display: inline; } </string>
+				<string>.hostmask { display: none; } </string>
+			</array>
+			<key>default</key>
+			<integer>0</integer>
+			<key>description</key>
+			<string>Display hostmask</string>
+			<key>type</key>
+			<string>list</string>
+			<key>options</key>
+			<array>
+				<string>Yes</string>
+				<string>No</string>
+			</array>
+		</dict>
+		<dict>
+			<key>style</key>
+			<array>
+				<string>.memberJoined, .memberParted { display: block; } </string>
+				<string>.memberJoined, .memberParted { display: none; } </string>
+			</array>
+			<key>default</key>
+			<integer>0</integer>
+			<key>description</key>
+			<string>Display joins and parts</string>
+			<key>type</key>
+			<string>list</string>
+			<key>options</key>
+			<array>
+				<string>Yes</string>
+				<string>No</string>
+			</array>
+		</dict>
+		<dict>
+			<key>style</key>
+			<array>
+				<string>.envelope &gt; .member:before { content: "&lt; "; } .envelope &gt; .member.server.operator:before { content: "&lt;*"; } .envelope &gt; .member.founder:before { content: "&lt;~"; } .envelope &gt; .member.administrator:before { content: "&lt;&amp;"; } .envelope &gt; .member.operator:before { content: "&lt;@"; } .envelope &gt; .member.half.operator:before { content: "&lt;%"; } .envelope &gt; .member.voice:before { content: "&lt;+"; }</string>
+				<string>.envelope &gt; .member:before, .envelope &gt; .member.server.operator:before, .envelope &gt; .member.founder:before, .envelope &gt; member.administrator:before, .envelope &gt; .member.operator:before, .envelope &gt; .member.half.operator:before, .envelope &gt; .member.voice:before { content: "&lt;"; }</string>
+			</array>
+			<key>default</key>
+			<integer>0</integer>
+			<key>description</key>
+			<string>Display user modes</string>
+			<key>type</key>
+			<string>list</string>
+			<key>options</key>
+			<array>
+				<string>Yes</string>
+				<string>No</string>
+			</array>
+		</dict>
+		<dict>
+			<key>style</key>
+			<array>
+				<string>.message .member { text-decoration: underline; }</string>
+				<string>.message .member { text-decoration: none; }</string>
+			</array>
+			<key>default</key>
+			<integer>0</integer>
+			<key>description</key>
+			<string>Underline members</string>
+			<key>type</key>
+			<string>list</string>
+			<key>options</key>
+			<array>
+				<string>Yes</string>
+				<string>No</string>
+			</array>
+		</dict>
+		<dict>
+			<key>style</key>
+			<array>
+				<string>.timestamp { display: block; float: left; }</string>
+				<string>.timestamp { display: block; float: right; }</string>
+				<string>.timestamp { display: none; !important; }</string>
+			</array>
+			<key>default</key>
+			<integer>0</integer>
+			<key>description</key>
+			<string>Timestamp</string>
+			<key>type</key>
+			<string>list</string>
+			<key>options</key>
+			<array>
+				<string>Left</string>
+				<string>Right</string>
+				<string>Hidden</string>
+			</array>
+		</dict>
+		<dict>
+			<key>style</key>
+			<array>
+				<string>.timestamp .pm { display: none; } .timestamp .seconds { display: inline; } .timestamp .hour12 { display: none; } .timestamp .hour { display: inline; }</string>
+				<string>.timestamp .pm { display: inline; } .timestamp .seconds { display: inline; } .timestamp .hour12 { display: inline; } .timestamp .hour { display: none; }</string>
+				<string>.timestamp .pm { display: none; } .timestamp .seconds { display: none; } .timestamp .hour12 { display: none; } .timestamp .hour { display: inline; }</string>
+				<string>.timestamp .pm { display: inline; } .timestamp .seconds { display: none; } .timestamp .hour12 { display: inline; } .timestamp .hour { display: none; }</string>
+			</array>
+			<key>default</key>
+			<integer>0</integer>
+			<key>description</key>
+			<string>Time format</string>
+			<key>type</key>
+			<string>list</string>
+			<key>options</key>
+			<array>
+				<string>21:03:37</string>
+				<string>09:03:37 pm</string>
+				<string>21:03</string>
+				<string>09:03 pm</string>
+			</array>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>a.member.color0 { color: %@; }</string>
+			<key>default</key>
+			<string>#fc6</string>
+			<key>description</key>
+			<string>Member color 0</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>a.member.color1 { color: %@; }</string>
+			<key>default</key>
+			<string>#cf6</string>
+			<key>description</key>
+			<string>Member color 1</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>a.member.color2 { color: %@; }</string>
+			<key>default</key>
+			<string>#6fc</string>
+			<key>description</key>
+			<string>Member color 2</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>a.member.color3 { color: %@; }</string>
+			<key>default</key>
+			<string>#6cf</string>
+			<key>description</key>
+			<string>Member color 3</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>a.member.color4 { color: %@; }</string>
+			<key>default</key>
+			<string>#c6f</string>
+			<key>description</key>
+			<string>Member color 4</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>a.member.color5 { color: %@; }</string>
+			<key>default</key>
+			<string>#ff6fcf</string>
+			<key>description</key>
+			<string>Member color 5</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>a.member.color6 { color: %@; }</string>
+			<key>default</key>
+			<string>#f66</string>
+			<key>description</key>
+			<string>Member color 6</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>a.member.color7 { color: %@; }</string>
+			<key>default</key>
+			<string>#ff6</string>
+			<key>description</key>
+			<string>Member color 7</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>a.member.color8 { color: %@; }</string>
+			<key>default</key>
+			<string>#6f6</string>
+			<key>description</key>
+			<string>Member color 8</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>a.member.color9 { color: %@; }</string>
+			<key>default</key>
+			<string>#6ff</string>
+			<key>description</key>
+			<string>Member color 9</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>a.member.color10 { color: %@; }</string>
+			<key>default</key>
+			<string>#66f</string>
+			<key>description</key>
+			<string>Member color 10</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>a.member.color11 { color: %@; }</string>
+			<key>default</key>
+			<string>#f6f</string>
+			<key>description</key>
+			<string>Member color 11</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>a.member.color12 { color: %@; }</string>
+			<key>default</key>
+			<string>#ff8000</string>
+			<key>description</key>
+			<string>Member color 12</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>a.member.color13 { color: %@; }</string>
+			<key>default</key>
+			<string>#80ff00</string>
+			<key>description</key>
+			<string>Member color 13</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>a.member.color14 { color: %@; }</string>
+			<key>default</key>
+			<string>#00ff80</string>
+			<key>description</key>
+			<string>Member color 14</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>a.member.color15 { color: %@; }</string>
+			<key>default</key>
+			<string>#0080ff</string>
+			<key>description</key>
+			<string>Member color 15</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>a.member.color16 { color: %@; }</string>
+			<key>default</key>
+			<string>#8000ff</string>
+			<key>description</key>
+			<string>Member color 16</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>a.member.color17 { color: %@; }</string>
+			<key>default</key>
+			<string>#ff0080</string>
+			<key>description</key>
+			<string>Member color 17</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>a.member.color18 { color: %@; }</string>
+			<key>default</key>
+			<string>#f00</string>
+			<key>description</key>
+			<string>Member color 18</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>a.member.color19 { color: %@; }</string>
+			<key>default</key>
+			<string>#ff0</string>
+			<key>description</key>
+			<string>Member color 19</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>a.member.color20 { color: %@; }</string>
+			<key>default</key>
+			<string>#0f0</string>
+			<key>description</key>
+			<string>Member color 20</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>a.member.color21 { color: %@; }</string>
+			<key>default</key>
+			<string>#0ff</string>
+			<key>description</key>
+			<string>Member color 21</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>a.member.color22 { color: %@; }</string>
+			<key>default</key>
+			<string>#00f</string>
+			<key>description</key>
+			<string>Member color 22</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>a.member.color23 { color: %@; }</string>
+			<key>default</key>
+			<string>#f0f</string>
+			<key>description</key>
+			<string>Member color 23</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>a.member.color24 { color: %@; }</string>
+			<key>default</key>
+			<string>#804000</string>
+			<key>description</key>
+			<string>Member color 24</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>a.member.color25 { color: %@; }</string>
+			<key>default</key>
+			<string>#408000</string>
+			<key>description</key>
+			<string>Member color 25</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>a.member.color26 { color: %@; }</string>
+			<key>default</key>
+			<string>#008040</string>
+			<key>description</key>
+			<string>Member color 26</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>a.member.color27 { color: %@; }</string>
+			<key>default</key>
+			<string>#004080</string>
+			<key>description</key>
+			<string>Member color 27</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>a.member.color28 { color: %@; }</string>
+			<key>default</key>
+			<string>#400080</string>
+			<key>description</key>
+			<string>Member color 28</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>a.member.color29 { color: %@; }</string>
+			<key>default</key>
+			<string>#800040</string>
+			<key>description</key>
+			<string>Member color 29</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>a.member.color30 { color: %@; }</string>
+			<key>default</key>
+			<string>#800000</string>
+			<key>description</key>
+			<string>Member color 30</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>a.member.color31 { color: %@; }</string>
+			<key>default</key>
+			<string>#808000</string>
+			<key>description</key>
+			<string>Member color 31</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>a.member.color32 { color: %@; }</string>
+			<key>default</key>
+			<string>#008000</string>
+			<key>description</key>
+			<string>Member color 32</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>a.member.color33 { color: %@; }</string>
+			<key>default</key>
+			<string>#008080</string>
+			<key>description</key>
+			<string>Member color 33</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>a.member.color34 { color: %@; }</string>
+			<key>default</key>
+			<string>#000080</string>
+			<key>description</key>
+			<string>Member color 34</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+		<dict>
+			<key>style</key>
+			<string>a.member.color35 { color: %@; }</string>
+			<key>default</key>
+			<string>#800080</string>
+			<key>description</key>
+			<string>Member color 35</string>
+			<key>type</key>
+			<string>color</string>
+		</dict>
+	</array>
+</dict>
+</plist>

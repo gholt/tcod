@@ -1,0 +1,22 @@
+body {
+	margin: 0px 0px 32px 0px;
+}
+.timestamp {
+	display: block;
+	background-color: light grey;
+}
+.timestamp {
+	color: #999;
+}
+.event {
+	font-size: 9px;
+	color: #aaa;
+}
+.envelope.highlight {
+	background: #fbb;
+}
+hr {
+    margin: 0;
+    padding: 0;
+    border: 1px solid #f90;
+}
