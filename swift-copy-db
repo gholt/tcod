@@ -1,0 +1,55 @@
+#!/usr/bin/python
+
+"""
+I've been working on this a bit but haven't finished it. Somebody it should be
+in Swift proper.
+"""
+
+import locale
+import os
+import sys
+
+import sqlite3
+
+from swift.common.db import ContainerBroker
+
+
+if __name__ == '__main__':
+    if len(sys.argv) != 3:
+        print 'Syntax: %s <from_db> <to_db>' % sys.argv[0]
+        sys.exit(1)
+    if os.path.sep not in sys.argv[2]:
+        sys.argv[2] = './' + sys.argv[2]
+    locale.setlocale(locale.LC_ALL, '')
+    from_broker = ContainerBroker(sys.argv[1])
+    query_part1 = '''SELECT account, container, created_at, put_timestamp,
+                     delete_timestamp, id, status, status_changed_at, '''
+    query_part2 = ' FROM container_stat'
+    with from_broker.get() as conn:
+        try:
+            curs = conn.execute(query_part1 + 'metadata' + query_part2)
+        except sqlite3.OperationalError, err:
+            if 'no such column: metadata' not in str(err):
+                raise
+            curs = conn.execute(query_part1 + "'' as metadata" + query_part2)
+        from_info = curs.fetchone()
+    to_broker = ContainerBroker(sys.argv[2], account=from_info['account'],
+                                container=from_info['container'])
+    to_broker.initialize(from_info['put_timestamp'])
+    with to_broker.get() as conn:
+        conn.execute('''
+            UPDATE container_stat SET created_at = ?, delete_timestamp = ?,
+                   status = ?, status_changed_at = ?, metadata = ?
+        ''', (from_info['created_at'], from_info['delete_timestamp'],
+              from_info['status'], from_info['status_changed_at'],
+              from_info['metadata']))
+    sync_point = -1
+    sync_count = 0
+    objects = from_broker.get_items_since(sync_point, 100000)
+    while objects:
+        to_broker.merge_items(objects)
+        sync_point = objects[-1]['ROWID']
+        sync_count += len(objects)
+        print 'Copied %s rows.' % locale.format('%d', sync_count, True)
+        objects = from_broker.get_items_since(sync_point, 100000)
+    to_broker.newid(from_info['id'])
