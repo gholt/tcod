@@ -1,0 +1,398 @@
+#!/usr/bin/python
+
+import eventlet
+eventlet.monkey_patch()
+
+from optparse import OptionParser
+from os import environ
+from random import random, randint
+from sys import argv, exit
+from time import time
+from urlparse import urlparse
+from uuid import uuid4
+
+from eventlet import GreenPool, sleep, Timeout
+from eventlet.semaphore import Semaphore
+
+from swift.common.bufferedhttp import http_connect
+from swift.common.client import get_auth, ClientException, Connection
+from swift.common.direct_client import direct_get_container, \
+    direct_head_container, retry
+from swift.common.utils import normalize_timestamp
+
+default_cont_name = 'walt'
+
+
+def container_names(num_containers):
+    if num_containers:
+        return ['%s_%d' % (default_cont_name, i)
+                for i in range(num_containers)]
+    else:
+        return [default_cont_name]
+
+
+def get_rand_container_name(num_containers):
+    if num_containers:
+        return '%s_%s' % (default_cont_name, int(random() * num_containers))
+    return default_cont_name
+
+
+def direct_put_object_c(node, part, account, container, obj, conn_timeout=5,
+                        response_timeout=15):
+    path = '/%s/%s/%s' % (account, container, obj)
+    with Timeout(conn_timeout):
+        conn = http_connect(node['ip'], node['port'], node['device'], part,
+                'PUT', path, headers={'x-content-type': 'text/plain',
+                'x-etag': 'd41d8cd98f00b204e9800998ecf8427e', 'x-size': '0',
+                'x-timestamp': normalize_timestamp(time())})
+    with Timeout(response_timeout):
+        resp = conn.getresponse()
+        resp.read()
+    if resp.status < 200 or resp.status >= 300:
+        raise ClientException(
+                'Container server %s:%s direct object PUT %s gave status %s' %
+                (node['ip'], node['port'],
+                 repr('/%s/%s%s' % (node['device'], part, path)),
+                 resp.status),
+                http_host=node['ip'], http_port=node['port'],
+                http_device=node['device'], http_status=resp.status,
+                http_reason=resp.reason)
+    return resp.status
+
+
+def direct_delete_object_c(node, part, account, container, obj, conn_timeout=5,
+                           response_timeout=15):
+    path = '/%s/%s/%s' % (account, container, obj)
+    with Timeout(conn_timeout):
+        conn = http_connect(node['ip'], node['port'], node['device'], part,
+                'DELETE', path,
+                headers={'x-timestamp': normalize_timestamp(time())})
+    with Timeout(response_timeout):
+        resp = conn.getresponse()
+        resp.read()
+    if resp.status < 200 or resp.status >= 300:
+        raise ClientException(
+            'Container server %s:%s direct object DELETE %s gave status %s' %
+            (node['ip'], node['port'],
+             repr('/%s/%s%s' % (node['device'], part, path)), resp.status),
+            http_host=node['ip'], http_port=node['port'],
+            http_device=node['device'], http_status=resp.status,
+            http_reason=resp.reason)
+    return resp.status
+
+
+def do_listings(left, sleep_amount, options, extra, extra2):
+    if options.direct:
+        while left[0] > 0:
+            left[0] -= 1
+            retry(direct_get_container, options.node, options.part,
+                  options.account, options.container)
+            sleep(sleep_amount)
+    else:
+        conn = Connection(options.auth, options.user, options.key,
+                          preauthurl=options.preauthurl,
+                          preauthtoken=options.preauthtoken, snet=options.snet)
+        while left[0] > 0:
+            left[0] -= 1
+            conn.get_container(get_rand_container_name(options.num_containers))
+            sleep(sleep_amount)
+
+
+def fill_queue_from_listings(options, queue):
+    if options.direct:
+        for cont_name in container_names(options.num_containers):
+            _junk, cont_list = retry(direct_get_container, options.node,
+                options.part, options.account, options.container)
+            if cont_list and cont_list[1]:
+                for obj_dict in cont_list[1]:
+                    if (cont_name, obj_dict['name']) not in queue['used']:
+                        queue['ok'].add((cont_name, obj_dict['name']))
+                break
+    else:
+        conn = Connection(options.auth, options.user, options.key,
+                          preauthurl=options.preauthurl,
+                          preauthtoken=options.preauthtoken, snet=options.snet)
+        for cont_name in container_names(options.num_containers):
+            cont_list = conn.get_container(cont_name)
+            if cont_list and cont_list[1]:
+                for obj_dict in cont_list[1]:
+                    if (cont_name, obj_dict['name']) not in queue['used']:
+                        queue['ok'].add((cont_name, obj_dict['name']))
+                break
+
+
+def do_object_deletes(left, sleep_amount, options, queue, sema):
+    if options.direct:
+        num_sleeps = 0
+        tried_listing = False
+        while left[0] > 0:
+            try:
+                with sema:
+                    cont_name, obj_name = queue['ok'].pop()
+                    queue['used'].add((cont_name, obj_name))
+            except KeyError:
+                if num_sleeps > 1:
+                    if not tried_listing:
+                        with sema:
+                            fill_queue_from_listings(options, queue)
+                        tried_listing = True
+                        continue
+                    left[0] = 0
+                    print "Nothing more to delete!!"
+                    break
+                num_sleeps += 1
+                sleep(1)
+                continue
+            tried_listing = False
+            retry(direct_delete_object_c, options.node, options.part,
+                  options.account, cont_name, obj_name)
+            left[0] -= 1
+            sleep(sleep_amount)
+    else:
+        conn = Connection(options.auth, options.user, options.key,
+                          preauthurl=options.preauthurl,
+                          preauthtoken=options.preauthtoken, snet=options.snet)
+        num_sleeps = 0
+        tried_listing = False
+        while left[0] > 0:
+            try:
+                with sema:
+                    cont_name, obj_name = queue['ok'].pop()
+                    queue['used'].add((cont_name, obj_name))
+                tried_listing = False
+                conn.delete_object(cont_name, obj_name)
+                left[0] -= 1
+            except KeyError:
+                if num_sleeps > 1:
+                    if not tried_listing:
+                        with sema:
+                            fill_queue_from_listings(options, queue)
+                        tried_listing = True
+                        continue
+                    left[0] = 0
+                    print "Nothing more to delete!!"
+                    break
+                num_sleeps += 1
+                sleep(1)
+                continue
+            sleep(sleep_amount)
+
+
+def do_object_puts(left, sleep_amount, options, queue, sema):
+    if options.direct:
+        while left[0] > 0:
+            left[0] -= 1
+            retry(direct_put_object_c, options.node, options.part,
+                  options.account, options.container, uuid4().hex)
+            sleep(sleep_amount)
+    else:
+        conn = Connection(options.auth, options.user, options.key,
+                          preauthurl=options.preauthurl,
+                          preauthtoken=options.preauthtoken, snet=options.snet)
+        while left[0] > 0:
+            left[0] -= 1
+            data = '0' * options.object_size
+            cont_name = get_rand_container_name(options.num_containers)
+            name_ok = False
+            while not name_ok:
+                obj_name = uuid4().hex
+                if obj_name not in queue['used']:
+                    name_ok = True
+            conn.put_object(cont_name,
+                            obj_name, data, content_length=len(data))
+            with sema:
+                queue['ok'].add((cont_name, obj_name))
+            sleep(sleep_amount)
+
+
+def do_container_heads(left, sleep_amount, options, extra, extra2):
+    if options.direct:
+        while left[0] > 0:
+            left[0] -= 1
+            retry(direct_head_container, options.node, options.part,
+                  options.account, options.container)
+            sleep(sleep_amount)
+    else:
+        conn = Connection(options.auth, options.user, options.key,
+                          preauthurl=options.preauthurl,
+                          preauthtoken=options.preauthtoken, snet=options.snet)
+        while left[0] > 0:
+            left[0] -= 1
+            conn.head_container(
+                get_rand_container_name(options.num_containers))
+            sleep(sleep_amount)
+
+
+TEST_FUNCS = [do_listings, do_object_puts,
+              do_container_heads, do_object_deletes]
+
+
+def run_test(number, options, arg, queue, sema):
+    begin = time()
+    iterations = 1
+    concurrency = 1
+    sleep_amount = 0
+    while arg:
+        typ = arg[0]
+        i = 1
+        while i < len(arg) and (arg[i].isdigit() or arg[i] == '.'):
+            i += 1
+        val = float(arg[1:i])
+        arg = arg[i:]
+        if typ == 'c':
+            concurrency = int(val)
+        elif typ == 'x':
+            iterations = int(val)
+        elif typ == 's':
+            sleep_amount = val
+        else:
+            raise Exception('Unknown test argument type: %s' % repr(typ))
+    if not options.direct:
+        conn = Connection(options.auth, options.user, options.key,
+                          preauthurl=options.preauthurl,
+                          preauthtoken=options.preauthtoken, snet=options.snet)
+        for cont_name in container_names(options.num_containers):
+            conn.put_container(cont_name)
+    gpool = GreenPool()
+
+    print 'Running test %s %s times at %s concurrency' % \
+          (number, iterations, concurrency)
+    left = [iterations]
+    for _ in xrange(concurrency):
+        gpool.spawn(TEST_FUNCS[number - 1], left, sleep_amount,
+                    options, queue, sema)
+    last = 0
+    tick = time()
+    while left[0] > 0:
+        while time() - tick < options.report_interval:
+            if not left[0]:
+                break
+            sleep(.1)
+        if left[0] > 0:
+            elapsed = time() - tick
+            persec = (iterations - left[0] - last) / elapsed
+            print 'Test %s: %s of %s: %.03f/s for the last %.03fs' % \
+                  (number, iterations - left[0], iterations, persec, elapsed)
+            r = [None, None] * len(TEST_FUNCS)
+            r[(number - 1) * 2] = iterations - left[0]
+            r[(number - 1) * 2 + 1] = persec
+            if options.reportfile:
+                options.reportfile.write('%s,' % time() +
+                    ','.join([v and str(v) or '' for v in r]) + '\n')
+            last = iterations - left[0]
+            tick = time()
+    gpool.waitall()
+    print 'Test %s finished: %.03fs: %.03f/s overall' % \
+          (number, time() - begin, iterations / (time() - begin))
+
+
+if __name__ == '__main__':
+    begin = time()
+    import gettext
+    gettext.install('swift', unicode=1)
+    parser = OptionParser(usage='''
+Usage: %%prog [options] <test> [<test>] ...
+Where <test> is: <number>[x<count>][c<concurrency>][s<sleep>]
+    <count>        is how many to do in total
+    <concurrency>  is how many to do at any given moment
+    <sleep>        is how long to wait before doing another, with the caveat
+                   that this applies at a single concurrency level
+Available test numbers:
+    1  Does listing requests on the container named walt
+    2  Does zero byte object puts into the container named walt
+    3  Does head requests on the container named walt
+    4  Does object deletes
+
+If -C (multiple containers) is set then instead of hitting walt it will use a
+randomly chosen container
+
+Examples:
+  %%prog -A http://127.0.0.1:11000/v1.0 -U user -K key 1x100c10s2
+  %%prog -D http://127.0.0.1:6041/sdb4/106861/8647f434-ce65-4295-ab35-1b921a5a4567/walt 1x100c10s2
+
+  This would do 100 total listings, up to 10 at any given time, and each of
+  those ten "concurrency threads" would sleep for 2 seconds between listings.
+'''.strip('\n') % globals())
+    parser.add_option('-f', '--file', dest='filename', default=None,
+                      help='File name for storing CSV reports (default: None)')
+    parser.add_option('-r', '--report-interval', dest='report_interval',
+                      default=60,
+                      help='Number of seconds between report updates')
+    parser.add_option('-s', '--snet', action='store_true', dest='snet',
+                      default=False, help='Use SERVICENET internal network')
+    parser.add_option('-A', '--auth', dest='auth',
+                      help='URL for obtaining an auth token')
+    parser.add_option('-U', '--user', dest='user',
+                      help='User name for obtaining an auth token')
+    parser.add_option('-K', '--key', dest='key',
+                      help='Key for obtaining an auth token')
+    parser.add_option('-D', '--direct', dest='direct', default=None,
+                      help='URL for running direct container server tests; '
+                           'the URL should be for the container itself, ex: '
+                           'http://127.0.0.1:6041/sdb4/106861/8647f434-ce65-'
+                           '4295-ab35-1b921a5a4567/walt')
+    parser.add_option('-C', '--num-put-containers', dest='num_put_containers',
+                      default=0,
+                      help='Number of container used (default 0 is only '
+                           'walt) only non-Direct mode.')
+    parser.add_option('-S', '--object-size', dest='object_size',
+                      default=0,
+                      help='Size of objects to PUT (in bytes) '
+                           'only non-Direct mode.')
+    parser.add_option('-N', '--container-name', dest='container_name',
+                      default='walt',
+                      help='Override default container name (walt).')
+    args = argv[1:]
+    if not args:
+        args.append('-h')
+    (options, args) = parser.parse_args(args)
+    options.num_containers = int(options.num_put_containers)
+    options.object_size = int(options.object_size)
+    options.report_interval = float(options.report_interval)
+    options.reportfile = options.filename and open(options.filename, 'w')
+    if options.container_name:
+        default_cont_name = options.container_name
+    if options.reportfile:
+        options.reportfile.write('Time,' +
+            ','.join(['Test %s Count,Test %s Rate' % (n, n)
+                      for n in xrange(1, len(TEST_FUNCS) + 1)]) + '\n')
+
+    required_help = '''
+Requires WALT_AUTH, WALT_USER, and WALT_KEY environment variables be set or
+overridden with -A, -U, or -K. Alternatively, you may use -D for direct
+container server testing.'''.strip('\n')
+    if not options.direct:
+        for attr in ('auth', 'user', 'key'):
+            if not getattr(options, attr, None):
+                setattr(options, attr, environ.get('WALT_%s' % attr.upper()))
+                if not getattr(options, attr, None):
+                    exit(required_help)
+    else:
+        parsed = urlparse(options.direct)
+        if ':' in parsed[1]:
+            ip, port = parsed[1].split(':', 1)
+            port = int(port)
+        else:
+            ip = parsed[1]
+            port = 80
+        _, device, options.part, options.account, options.container = \
+            parsed[2].split('/')
+        options.node = {'ip': ip, 'port': port, 'device': device}
+
+    if not args:
+        parser.print_help()
+        exit()
+
+    if not options.direct:
+        options.preauthurl, options.preauthtoken = \
+           get_auth(options.auth, options.user, options.key, snet=options.snet)
+    gpool = GreenPool()
+    queue = {'ok': set(), 'used': set()}
+    sema = Semaphore()
+    for arg in args:
+        i = 0
+        while i < len(arg) and arg[i].isdigit():
+            i += 1
+        gpool.spawn(run_test, int(arg[:i]), options, arg[i:], queue, sema)
+    gpool.waitall()
+    print 'All tests finished: %.03fs' % (time() - begin)
