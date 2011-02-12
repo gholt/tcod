@@ -10,7 +10,7 @@ from sys import argv, exit
 from time import time
 from urlparse import urlparse
 from uuid import uuid4
-
+from httplib import BadStatusLine
 from eventlet import GreenPool, sleep, Timeout
 from eventlet.semaphore import Semaphore
 
@@ -21,7 +21,7 @@ from swift.common.direct_client import direct_get_container, \
 from swift.common.utils import normalize_timestamp
 
 default_cont_name = 'walt'
-
+direct_exceptions = []
 
 def container_names(num_containers):
     if num_containers:
@@ -45,9 +45,13 @@ def direct_put_object_c(node, part, account, container, obj, conn_timeout=5,
                 'PUT', path, headers={'x-content-type': 'text/plain',
                 'x-etag': 'd41d8cd98f00b204e9800998ecf8427e', 'x-size': '0',
                 'x-timestamp': normalize_timestamp(time())})
-    with Timeout(response_timeout):
-        resp = conn.getresponse()
-        resp.read()
+    try:
+        with Timeout(response_timeout):
+            resp = conn.getresponse()
+            resp.read()
+    except BadStatusLine, e:
+        direct_exceptions.append(str(e))
+        return 500
     if resp.status < 200 or resp.status >= 300:
         raise ClientException(
                 'Container server %s:%s direct object PUT %s gave status %s' %
@@ -67,9 +71,13 @@ def direct_delete_object_c(node, part, account, container, obj, conn_timeout=5,
         conn = http_connect(node['ip'], node['port'], node['device'], part,
                 'DELETE', path,
                 headers={'x-timestamp': normalize_timestamp(time())})
-    with Timeout(response_timeout):
-        resp = conn.getresponse()
-        resp.read()
+    try:
+        with Timeout(response_timeout):
+            resp = conn.getresponse()
+            resp.read()
+    except BadStatusLine, e:
+        direct_exceptions.append(str(e))
+        return 500
     if resp.status < 200 or resp.status >= 300:
         raise ClientException(
             'Container server %s:%s direct object DELETE %s gave status %s' %
@@ -200,8 +208,7 @@ def do_object_puts(left, sleep_amount, options, queue, sema):
                     name_ok = True
             conn.put_object(cont_name,
                             obj_name, data, content_length=len(data))
-            with sema:
-                queue['ok'].add((cont_name, obj_name))
+            queue['ok'].add((cont_name, obj_name))
             sleep(sleep_amount)
 
 
@@ -396,3 +403,6 @@ container server testing.'''.strip('\n')
         gpool.spawn(run_test, int(arg[:i]), options, arg[i:], queue, sema)
     gpool.waitall()
     print 'All tests finished: %.03fs' % (time() - begin)
+    if direct_exceptions:
+        print "#Direct exceptions: %s" % len(direct_exceptions)
+        print "EG: %s" % direct_exceptions[0]
