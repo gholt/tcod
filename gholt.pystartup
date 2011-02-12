@@ -1,0 +1,43 @@
+#!/usr/bin/python
+
+import atexit
+import os
+import readline
+import rlcompleter
+import sys
+
+
+"""http://code.activestate.com/recipes/496812/"""
+
+
+class BetterCompleter(rlcompleter.Completer):
+
+    def complete(self, text, state):
+        if text == "":
+            return ['\t', None][state]
+        else:
+            return rlcompleter.Completer.complete(self, text, state)
+
+readline.parse_and_bind("tab: complete")
+readline.parse_and_bind("bind ^I rl_complete")  # OS X
+readline.set_completer(BetterCompleter().complete)
+
+
+"""http://docs.python.org/tutorial/interactive.html#tut-interacting"""
+
+
+def save_history(historyPath=os.path.expanduser('~/.pyhistory')):
+    import readline
+    readline.write_history_file(historyPath)
+
+if os.path.exists(os.path.expanduser('~/.pyhistory')):
+    readline.read_history_file(os.path.expanduser('~/.pyhistory'))
+atexit.register(save_history)
+
+
+if os.environ['TERM'] in ['screen', 'xterm', 'xterm-color']:
+    sys.ps1 = '\001\033[1;31m\002>\001\033[0;31m\002>\001\033[0m\002> '
+    sys.ps2 = '\001\033[1;31m\002.\001\033[0;31m\002.\001\033[0m\002. '
+
+
+del atexit, BetterCompleter, readline, save_history
