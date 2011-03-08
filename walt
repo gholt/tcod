@@ -23,6 +23,8 @@ from swift.common.utils import normalize_timestamp
 default_cont_name = 'walt'
 direct_exceptions = []
 
+FILL_QUEUE_FROM_LISTINGS_TIMEOUT = 20
+
 def container_names(num_containers):
     if num_containers:
         return ['%s_%d' % (default_cont_name, i)
@@ -110,7 +112,8 @@ def fill_queue_from_listings(options, queue):
     if options.direct:
         for cont_name in container_names(options.num_containers):
             _junk, cont_list = retry(direct_get_container, options.node,
-                options.part, options.account, options.container)
+                options.part, options.account, options.container,
+                response_timeout=FILL_QUEUE_FROM_LISTINGS_TIMEOUT)
             if cont_list and cont_list[1]:
                 for obj_dict in cont_list[1]:
                     if (cont_name, obj_dict['name']) not in queue['used']:
