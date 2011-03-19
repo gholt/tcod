@@ -1,4 +1,10 @@
 #!/usr/bin/python
+"""
+Swift Key Value Store, skvs, pronounced "skivvies". A utility for using Swift
+as a simple key/value store. You can do the usual set, get, and listing of
+keys. In addition, you can filter a key listing with regular expression
+matching of key values, though these queries can take a while to complete.
+"""
 
 import os
 import re
