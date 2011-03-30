@@ -1,0 +1,30 @@
+#!/usr/bin/env python
+
+import sys
+from swift.common.ring import Ring
+
+ringfile = sys.argv[1]
+
+ring = Ring(ringfile)
+
+devs = []
+for ipdevice in sys.argv[2:]:
+    ip, device = ipdevice.split('/')
+    devs.extend(((i, d) for i, d in enumerate(ring.devs) if d['ip'] == ip and d['device'] == device))
+if len(devs) + 2 != len(sys.argv):
+    raise Exception('Could not resolve all devices')
+
+devparts = []
+for index, dev in devs:
+    devparts.append(set(p for p2d in ring._replica2part2dev_id for p, d in enumerate(p2d) if d == index))
+if len(devparts) + 2 != len(sys.argv):
+    raise Exception('Could not resolve all device partitions')
+
+lost = set()
+for index1, dev in devs:
+    for index2, dev in devs[index1:]:
+        for index3, dev in devs[index2:]:
+            lost.update(devparts[index1].intersection(devparts[index2]).intersection(devparts[index3]))
+print len(lost)
+if len(lost) < 1000:
+    print lost

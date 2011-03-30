@@ -1,0 +1,35 @@
+#!/usr/bin/env python
+
+import sys
+from swift.common.ring import Ring
+
+ringfile = sys.argv[1]
+
+ring = Ring(ringfile)
+
+devs = []
+for ipdevice in sys.argv[2:]:
+    if not [d for d in ring.devs if '%s/%s' % (d['ip'], d['device']) == ipdevice]:
+        raise Exception('could not resolve ' + ipdevice)
+
+lost1 = []
+lost2 = []
+lostall = []
+for part in xrange(ring.partition_count):
+    left = len([d for d in ring.get_part_nodes(part) if '%s/%s' % (d['ip'], d['device']) not in sys.argv[2:]])
+    if left == 2:
+        lost1.append(part)
+    elif left == 1:
+        lost2.append(part)
+    elif left == 0:
+        lostall.append(part)
+
+print 'lost1', len(lost1)
+if len(lost1) < 1000:
+    print lost1
+print 'lost2', len(lost2)
+if len(lost2) < 1000:
+    print lost2
+print 'lostall', len(lostall)
+if len(lostall) < 1000:
+    print lostall
