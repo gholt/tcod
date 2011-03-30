@@ -89,11 +89,11 @@ set visualbell t_vb=
 set mouse=a
 set ttymouse=xterm2
 
-" e = gui tabs, g = menu items greyable, m = menu bar, r = right scrollbar
-set guioptions=egmr
+" Font for GUI versions.
+set guifont=Monaco:h14
 
-" Modified, file name, full file path
-set guitablabel=%M\ %t\ %F
+" e = gui tabs, g = menu items greyable, m = menu bar, r = right scrollbar
+set guioptions=egm
 
 " Maps \cd to change the current directory to the same directory as the file
 " in the current buffer.
@@ -106,3 +106,6 @@ map <Leader>b :ls<CR>:b<Space>
 nnoremap <Leader>p :set invpaste paste?<CR>
 imap <Leader>p <C-O><Leader>p
 set pastetoggle=<Leader>p
+
+" Makes long lines not break mid-word
+set linebreak
