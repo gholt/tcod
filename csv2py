@@ -1,0 +1,102 @@
+#!/usr/bin/env python
+
+import csv
+import sys
+import datetime
+
+
+if len(sys.argv) != 3:
+    sys.exit('''
+Syntax: %s <from.csv> <to.py>
+
+Be sure the first line in the csv contains the headings for the columns,
+prefixed with the type for the column:
+
+t   Text string
+i   Integer decimal
+n   Floating point number
+$   Floating point number, but converted to an integer counting the tenths of a
+    cent. Useful when working with monetary values to avoid floating point
+    precision problems. Example: 18.384 will become 18384
+d   Date in mo/da/year format
+    '''.strip())
+
+
+def convert(value, type):
+    value = value.strip()
+    if type == 't':
+        return repr(value)
+    elif type == 'i':
+        value = value.replace(',', '')
+        if not value:
+            return 'None'
+        return str(int(value))
+    elif type == 'n':
+        value = value.replace(',', '')
+        if not value:
+            return 'None'
+        return str(float(value))
+    elif type == '$':
+        value = value.replace(',', '')
+        if not value:
+            return 'None'
+        if '.' not in value:
+            return str(int(value) * 1000)
+        p, s = value.split('.')
+        s = s[:3]
+        while len(s) < 3:
+            s += '0'
+        n = 1
+        if p and p[0] == '-':
+            p = p[1:]
+            n = -1
+        return str(int(p or 0) * 1000 * n + int(s) * n)
+    elif type == 'd':
+        if not value:
+            return 'None'
+        m, d, y = value.split('/')
+        return 'datetime.date(%4d, %2d, %2d)' % (int(y), int(m), int(d))
+
+
+rows = [r for r in csv.reader(open(sys.argv[1]))]
+headings = rows[0]
+rows = rows[1:]
+
+column_types = [h[0] for h in headings]
+headings = [h[1:] for h in headings]
+for t in column_types:
+    if t not in 'tin$d':
+        sys.exit('Invalid column type %r' % t)
+
+column_lengths = [0] * max(len(r) for r in rows)
+if len(column_lengths) != len(headings):
+    sys.exit('Rows are of unequal lengths')
+for c in xrange(len(column_lengths)):
+    for r in rows:
+        r[c] = convert(r[c], column_types[c])
+    column_lengths[c] = max(len(headings[c]), max(len(r[c]) for r in rows if c < len(r)))
+
+f = open(sys.argv[2], 'w')
+f.write('''#!/usr/bin/env python
+
+import datetime
+
+
+''')
+for i, h in enumerate(headings):
+    f.write('%s = %d\n' % (h.upper().replace(' ', '_').replace('/', '_'), i))
+f.write('\n')
+f.write('#  ')
+for c, l in enumerate(column_lengths):
+    f.write(('  %%%ds' % l) % headings[c])
+f.write('\nrows = [\n')
+for i, r in enumerate(rows):
+    if i:
+        f.write(',\n')
+    f.write('    [')
+    for c, l in enumerate(column_lengths):
+        if c:
+            f.write(', ')
+        f.write(('%%%ds' % l) % r[c])
+    f.write(']')
+f.write('\n]\n')
