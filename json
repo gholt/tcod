@@ -1,0 +1,13 @@
+#!/usr/bin/env python
+
+from pprint import pprint
+from sys import stdin
+
+try:
+    import simplejson as json
+except ImportError:
+    import json
+
+
+data = json.load(stdin)
+pprint(data)
