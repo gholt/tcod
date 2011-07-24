@@ -1,0 +1,74 @@
+#!/usr/bin/env python
+"""
+Just verifies the Google-style UTF-16 CSV file can be read and written here in
+Python.
+
+Code gleaned from:
+http://docs.python.org/library/csv.html
+http://dblume.livejournal.com/136387.html
+"""
+
+from codecs import getincrementalencoder, open as codecs_open
+from cStringIO import StringIO
+from csv import excel, reader, writer
+from sys import argv, exit
+
+
+FILENAME = argv[1]
+
+
+class UnicodeWriter:
+
+    def __init__(self, f, dialect=excel, encoding="utf-8", **kwargs):
+        self.queue = StringIO()
+        self.writer = writer(self.queue, dialect=dialect, **kwargs)
+        self.stream = f
+        self.encoder = getincrementalencoder(encoding)()
+
+    def writerow(self, row):
+        self.writer.writerow([s.encode("utf-8") for s in row])
+        data = self.queue.getvalue()
+        data = data.decode("utf-8")
+        data = self.encoder.encode(data)
+        self.stream.write(data)
+        self.queue.truncate(0)
+
+    def writerows(self, rows):
+        for row in rows:
+            self.writerow(row)
+
+
+def unicode_csv_reader(unicode_csv_data, dialect=excel, **kwargs):
+    csv_reader = \
+        reader(utf_8_encoder(unicode_csv_data), dialect=dialect, **kwargs)
+    for row in csv_reader:
+        yield [unicode(cell, 'utf-8') for cell in row]
+
+
+def utf_8_encoder(unicode_csv_data):
+    for line in unicode_csv_data:
+        yield line.encode('utf-8')
+
+
+f = unicode_csv_reader(codecs_open(FILENAME, 'r', 'utf-16'))
+
+headings = f.next()
+print 'There are %d headings' % len(headings)
+
+rows = []
+for line, row in enumerate(f):
+    if len(row) != len(headings):
+        exit('Row on line %d did not have the correct number of columns: %d '
+             '!= %d' % (line + 1, len(row), len(headings)))
+    rows.append(row)
+print 'There are %d rows' % len(rows)
+
+o = StringIO()
+f = UnicodeWriter(o, encoding='utf-16')
+f.writerow(headings)
+f.writerows(rows)
+
+if open(FILENAME, 'rb').read() == o.getvalue():
+    print 'Exact same file data was recreated from parsed data.'
+else:
+    exit('Could not create exact same file data from parsed data.')
