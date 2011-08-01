@@ -90,7 +90,7 @@ set mouse=a
 set ttymouse=xterm2
 
 " Font for GUI versions.
-set guifont=Monaco:h14
+set guifont=Inconsolata-dz:h13
 
 " e = gui tabs, g = menu items greyable, m = menu bar, r = right scrollbar
 set guioptions=egm
