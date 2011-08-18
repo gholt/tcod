@@ -50,10 +50,11 @@ Example (sends SIGTERM to all orphaned Swift processes older than two hours):
             sys.exit('Could not process ps line %r' % line)
         if pid in pids:
             continue
-        if not args.startswith('/usr/bin/python /usr/local/bin/swift-') or \
+        if (not args.startswith('/usr/bin/python /usr/bin/swift-') and
+            not args.startswith('/usr/bin/python /usr/local/bin/swift-')) or \
                 'once' in args.split():
             continue
-        args = args[len('/usr/bin/python /usr/local/bin/'):]
+        args = args.split('-', 1)[1]
         etime = etime.split('-')
         if len(etime) == 2:
             hours = int(etime[0]) * 24
