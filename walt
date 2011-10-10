@@ -11,6 +11,7 @@ from time import time
 from urlparse import urlparse
 from uuid import uuid4
 from httplib import BadStatusLine
+from hashlib import md5
 from eventlet import GreenPool, sleep, Timeout
 from eventlet.semaphore import Semaphore
 
@@ -40,13 +41,30 @@ def get_rand_container_name(num_containers):
 
 
 def direct_put_object_c(node, part, account, container, obj, conn_timeout=5,
-                        response_timeout=15):
+                        response_timeout=15, obj_size=0, chunk_size=0):
     path = '/%s/%s/%s' % (account, container, obj)
     with Timeout(conn_timeout):
+        headers = {'x-content-type': 'text/plain',
+            'x-size': '0', 'x-timestamp': normalize_timestamp(time()),
+            'content-type': 'text/plain', 'content-length': obj_size}
+        obj_data = ''
+        if chunk_size:
+            headers['transfer-encoding'] = 'chunked'
+        else:
+            obj_data = '0' * options.object_size
+            headers['x-etag'] = md5(obj_data).hexdigest()
+
         conn = http_connect(node['ip'], node['port'], node['device'], part,
-                'PUT', path, headers={'x-content-type': 'text/plain',
-                'x-etag': 'd41d8cd98f00b204e9800998ecf8427e', 'x-size': '0',
-                'x-timestamp': normalize_timestamp(time())})
+                'PUT', path, headers=headers)
+        if chunk_size:
+            while obj_size > 0:
+                cur_chunk_size = min(obj_size, chunk_size)
+                chunk = '0' * cur_chunk_size
+                obj_size -= cur_chunk_size
+                conn.send('%x\r\n%s\r\n' % (cur_chunk_size, chunk))
+            conn.send('0\r\n\r\n')
+        else:
+            conn.send(obj_data)
     try:
         with Timeout(response_timeout):
             resp = conn.getresponse()
@@ -63,6 +81,7 @@ def direct_put_object_c(node, part, account, container, obj, conn_timeout=5,
                 http_host=node['ip'], http_port=node['port'],
                 http_device=node['device'], http_status=resp.status,
                 http_reason=resp.reason)
+    conn.close()
     return resp.status
 
 
@@ -193,8 +212,13 @@ def do_object_puts(left, sleep_amount, options, queue, sema):
     if options.direct:
         while left[0] > 0:
             left[0] -= 1
-            retry(direct_put_object_c, options.node, options.part,
-                  options.account, options.container, uuid4().hex)
+            partition = options.part
+            if options.num_partitions:
+                partition = randint(1, int(options.num_partitions))
+
+            retry(direct_put_object_c, options.node, partition,
+                  options.account, options.container, uuid4().hex,
+                  obj_size=options.object_size, chunk_size=options.chunk_size)
             sleep(sleep_amount)
     else:
         conn = Connection(options.auth, options.user, options.key,
@@ -202,7 +226,6 @@ def do_object_puts(left, sleep_amount, options, queue, sema):
                           preauthtoken=options.preauthtoken, snet=options.snet)
         while left[0] > 0:
             left[0] -= 1
-            data = '0' * options.object_size
             cont_name = get_rand_container_name(options.num_containers)
             name_ok = False
             while not name_ok:
@@ -210,7 +233,7 @@ def do_object_puts(left, sleep_amount, options, queue, sema):
                 if obj_name not in queue['used']:
                     name_ok = True
             conn.put_object(cont_name,
-                            obj_name, data, content_length=len(data))
+                            obj_name, obj_data, content_length=len(obj_data))
             queue['ok'].add((cont_name, obj_name))
             sleep(sleep_amount)
 
@@ -322,6 +345,11 @@ Examples:
 
   This would do 100 total listings, up to 10 at any given time, and each of
   those ten "concurrency threads" would sleep for 2 seconds between listings.
+
+  For direct object PUTs, you can use urls in form:
+  %%prog -D http://127.0.0.1:6010/sdb1 2x100c2s0 -o 100 -k 10 -p 5
+  if this is done random account/container strings will be made
+
 '''.strip('\n') % globals())
     parser.add_option('-f', '--file', dest='filename', default=None,
                       help='File name for storing CSV reports (default: None)')
@@ -341,15 +369,23 @@ Examples:
                            'the URL should be for the container itself, ex: '
                            'http://127.0.0.1:6041/sdb4/106861/8647f434-ce65-'
                            '4295-ab35-1b921a5a4567/walt')
-    parser.add_option('-C', '--num-put-containers', dest='num_put_containers',
+    parser.add_option('-c', '--num-put-containers', dest='num_put_containers',
                       default=0,
                       help='Number of container used (default 0 is only '
                            'walt) only non-Direct mode.')
-    parser.add_option('-S', '--object-size', dest='object_size',
+    parser.add_option('-o', '--object-size', dest='object_size',
                       default=0,
                       help='Size of objects to PUT (in bytes) '
-                           'only non-Direct mode.')
-    parser.add_option('-N', '--container-name', dest='container_name',
+                           'Must be set >= 0 with direct PUT to object-server')
+    parser.add_option('-p', '--num-partitions', dest='num_partitions',
+                      default=1,
+                      help='Used in direct object PUTs- randomizes partitions '
+                      'in given range.  Default: 1')
+    parser.add_option('-k', '--chunk-size', dest='chunk_size',
+                      default=0,
+                      help='Used in direct object PUTs- will send data in '
+                      'chunk-size')
+    parser.add_option('-n', '--container-name', dest='container_name',
                       default='walt',
                       help='Override default container name (walt).')
     args = argv[1:]
@@ -358,6 +394,7 @@ Examples:
     (options, args) = parser.parse_args(args)
     options.num_containers = int(options.num_put_containers)
     options.object_size = int(options.object_size)
+    options.chunk_size = int(options.chunk_size)
     options.report_interval = float(options.report_interval)
     options.reportfile = options.filename and open(options.filename, 'w')
     if options.container_name:
@@ -385,8 +422,17 @@ container server testing.'''.strip('\n')
         else:
             ip = parsed[1]
             port = 80
-        _, device, options.part, options.account, options.container = \
-            parsed[2].split('/')
+        url_parts = parsed[2].split('/')
+        if len(url_parts) == 5:
+            _, device, options.part, options.account, options.container = \
+                url_parts
+        elif len(url_parts) == 2:
+            _, device, options.part, options.account, options.container = \
+                url_parts + [1, uuid4().hex, uuid4().hex]
+        else:
+            parser.print_help()
+            print "Invalid URL"
+            exit()
         options.node = {'ip': ip, 'port': port, 'device': device}
 
     if not args:
