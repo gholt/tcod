@@ -26,6 +26,7 @@ direct_exceptions = []
 
 FILL_QUEUE_FROM_LISTINGS_TIMEOUT = 20
 
+
 def container_names(num_containers):
     if num_containers:
         return ['%s_%d' % (default_cont_name, i)
@@ -46,25 +47,24 @@ def direct_put_object_c(node, part, account, container, obj, conn_timeout=5,
     with Timeout(conn_timeout):
         headers = {'x-content-type': 'text/plain',
             'x-size': '0', 'x-timestamp': normalize_timestamp(time()),
-            'content-type': 'text/plain', 'content-length': obj_size}
+            'content-type': 'text/plain', 'content-length': str(obj_size)}
         obj_data = ''
         if chunk_size:
-            headers['transfer-encoding'] = 'chunked'
+            response_timeout = 300
         else:
             obj_data = '0' * options.object_size
             headers['x-etag'] = md5(obj_data).hexdigest()
-
         conn = http_connect(node['ip'], node['port'], node['device'], part,
                 'PUT', path, headers=headers)
-        if chunk_size:
-            while obj_size > 0:
-                cur_chunk_size = min(obj_size, chunk_size)
-                chunk = '0' * cur_chunk_size
-                obj_size -= cur_chunk_size
-                conn.send('%x\r\n%s\r\n' % (cur_chunk_size, chunk))
-            conn.send('0\r\n\r\n')
-        else:
-            conn.send(obj_data)
+
+    if chunk_size:
+        while obj_size > 0:
+            cur_chunk_size = min(obj_size, chunk_size)
+            obj_size -= cur_chunk_size
+            conn.send('0' * cur_chunk_size)
+    else:
+        conn.send(obj_data)
+
     try:
         with Timeout(response_timeout):
             resp = conn.getresponse()
