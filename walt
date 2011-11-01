@@ -226,6 +226,7 @@ def do_object_puts(left, sleep_amount, options, queue, sema):
                           preauthtoken=options.preauthtoken, snet=options.snet)
         while left[0] > 0:
             left[0] -= 1
+            obj_data = '0' * options.object_size
             cont_name = get_rand_container_name(options.num_containers)
             name_ok = False
             while not name_ok:
