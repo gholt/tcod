@@ -4,9 +4,20 @@ from subprocess import PIPE, Popen
 from time import mktime, strptime, time
 
 
-ALIASES = {'clayg': 'clay gerrard', 'mike barton': 'michael barton'}
+ALIASES = {
+    'chuck': 'chuck thier',
+    'clayg': 'clay gerrard',
+    'cthier': 'chuck thier',
+    'ed': 'ed leafe',
+    'gholt': 'greg holt',
+    'glange': 'greg lange',
+    'john': 'john dickinson',
+    'letterj': 'jay payne',
+    'mike barton': 'michael barton',
+    'redbo': 'michael barton',
+}
 RECENT = time() - 86400 * 90
-TOP = 20
+TOP = 20000
 
 
 author_adds = {}
