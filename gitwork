@@ -6,6 +6,7 @@ from time import mktime, strptime, time
 
 ALIASES = {'clayg': 'clay gerrard', 'mike barton': 'michael barton'}
 RECENT = time() - 86400 * 90
+TOP = 20
 
 
 author_adds = {}
@@ -64,7 +65,7 @@ author_recent_net = \
     sorted(author_recent_net.items(), key=lambda x: x[1], reverse=True)
 
 print '-- Lines Added All Time -------   ------ Recently ---------------'
-for x in xrange(len(author_adds)):
+for x in xrange(min(TOP, len(author_adds))):
     a, c = author_adds[x]
     try:
         ra, rc = author_recent_adds[x]
@@ -73,7 +74,7 @@ for x in xrange(len(author_adds)):
     print '%10s %-20s   %10s %-20s' % (c, a, rc if ra else '', ra)
 print
 print '-- Lines Removed All Time -----   ------ Recently ---------------'
-for x in xrange(len(author_deletes)):
+for x in xrange(min(TOP, len(author_deletes))):
     a, c = author_deletes[x]
     try:
         ra, rc = author_recent_deletes[x]
@@ -82,7 +83,7 @@ for x in xrange(len(author_deletes)):
     print '%10s %-20s   %10s %-20s' % (c, a, rc if ra else '', ra)
 print
 print '-- Lines Net All Time ---------   ------ Recently ---------------'
-for x in xrange(len(author_net)):
+for x in xrange(min(TOP, len(author_net))):
     a, c = author_net[x]
     try:
         ra, rc = author_recent_net[x]
