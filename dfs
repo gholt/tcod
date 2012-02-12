@@ -13,6 +13,6 @@ for line in stdin:
     disks[disk] = percent
     percents[percent] = percents.get(percent, 0) + 1
 
-mul = 69.0 / max(percents.values())
+mul = 68.0 / max(percents.values())
 for percent in sorted(percents):
-    print '% 3d%% % 4d %s' % (percent, percents[percent], '*' * int(percents[percent] * mul))
+    print '% 3d%% % 5d %s' % (percent, percents[percent], '*' * int(percents[percent] * mul))

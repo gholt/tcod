@@ -24,7 +24,7 @@ from swift.common.utils import normalize_timestamp
 default_cont_name = 'walt'
 direct_exceptions = []
 
-FILL_QUEUE_FROM_LISTINGS_TIMEOUT = 20
+FILL_QUEUE_TIMEOUT = 20
 
 
 def container_names(num_containers):
@@ -110,7 +110,7 @@ def direct_delete_object_c(node, part, account, container, obj, conn_timeout=5,
     return resp.status
 
 
-def do_listings(left, sleep_amount, options, extra, extra2):
+def do_listings(left, sleep_amount, options):
     if options.direct:
         while left[0] > 0:
             left[0] -= 1
@@ -127,88 +127,106 @@ def do_listings(left, sleep_amount, options, extra, extra2):
             sleep(sleep_amount)
 
 
-def fill_queue_from_listings(options, queue):
-    if options.direct:
-        for cont_name in container_names(options.num_containers):
-            _junk, cont_list = retry(direct_get_container, options.node,
-                options.part, options.account, options.container,
-                response_timeout=FILL_QUEUE_FROM_LISTINGS_TIMEOUT)
-            if cont_list and cont_list[1]:
-                for obj_dict in cont_list[1]:
-                    if (cont_name, obj_dict['name']) not in queue['used']:
-                        queue['ok'].add((cont_name, obj_dict['name']))
+def keep_delete_queue_filled(left, options):
+    while left[0]:
+        items = 0
+        with options.delete_queue_sema:
+            items = len(options.delete_queue)
+        if items > 10000:
+            sleep(.1)
+            continue
+        if options.direct:
+            cont_lists = []
+            for cont_name in container_names(options.num_containers):
+                _junk, cont_list = retry(direct_get_container, options.node,
+                    options.part, options.account, options.container,
+                    marker=options.delete_markers.get(cont_name),
+                    response_timeout=FILL_QUEUE_TIMEOUT)
+                if cont_list and cont_list[1]:
+                    cont_lists.append((cont_name, cont_list[1]))
+                    options.delete_markers[cont_name] = \
+                        cont_list[1][-1]['name']
+            if not cont_lists:
+                with options.delete_queue_sema:
+                    options.delete_queue.append((False, False))
                 break
-    else:
-        conn = Connection(options.auth, options.user, options.key,
-                          preauthurl=options.preauthurl,
-                          preauthtoken=options.preauthtoken, snet=options.snet)
-        for cont_name in container_names(options.num_containers):
-            cont_list = conn.get_container(cont_name)
-            if cont_list and cont_list[1]:
-                for obj_dict in cont_list[1]:
-                    if (cont_name, obj_dict['name']) not in queue['used']:
-                        queue['ok'].add((cont_name, obj_dict['name']))
+            with options.delete_queue_sema:
+                done = False
+                while not done:
+                    done = True
+                    for cont_name, cont_list in cont_lists:
+                        if cont_list:
+                            obj_dict = cont_list.pop(0)
+                            options.delete_queue.append(
+                                (cont_name, obj_dict['name']))
+                            done = False
+        else:
+            conn = Connection(options.auth, options.user, options.key,
+                              preauthurl=options.preauthurl,
+                              preauthtoken=options.preauthtoken,
+                              snet=options.snet)
+            cont_lists = []
+            for cont_name in container_names(options.num_containers):
+                cont_list = conn.get_container(cont_name,
+                                marker=options.delete_markers.get(cont_name))
+                if cont_list and cont_list[1]:
+                    cont_lists.append((cont_name, cont_list[1]))
+                    options.delete_markers[cont_name] = \
+                        cont_list[1][-1]['name']
+            if not cont_lists:
+                with options.delete_queue_sema:
+                    options.delete_queue.append((False, False))
                 break
+            with options.delete_queue_sema:
+                done = False
+                while not done:
+                    done = True
+                    for cont_name, cont_list in cont_lists:
+                        if cont_list:
+                            obj_dict = cont_list.pop(0)
+                            options.delete_queue.append(
+                                (cont_name, obj_dict['name']))
+                            done = False
 
 
-def do_object_deletes(left, sleep_amount, options, queue, sema):
+def do_object_deletes(left, sleep_amount, options):
     if options.direct:
-        num_sleeps = 0
-        tried_listing = False
         while left[0] > 0:
             try:
-                with sema:
-                    cont_name, obj_name = queue['ok'].pop()
-                    queue['used'].add((cont_name, obj_name))
-            except KeyError:
-                if num_sleeps > 1:
-                    if not tried_listing:
-                        with sema:
-                            fill_queue_from_listings(options, queue)
-                        tried_listing = True
-                        continue
-                    left[0] = 0
-                    print "Nothing more to delete!!"
-                    break
-                num_sleeps += 1
-                sleep(1)
+                with options.delete_queue_sema:
+                    cont_name, obj_name = options.delete_queue.pop(0)
+            except IndexError:
+                sleep(.1)
                 continue
-            tried_listing = False
+            if cont_name is False and obj_name is False:
+                print 'Not enough to delete; final results will be incorrect!'
+                left[0] = 0
+                break
+            left[0] -= 1
             retry(direct_delete_object_c, options.node, options.part,
                   options.account, cont_name, obj_name)
-            left[0] -= 1
             sleep(sleep_amount)
     else:
         conn = Connection(options.auth, options.user, options.key,
                           preauthurl=options.preauthurl,
                           preauthtoken=options.preauthtoken, snet=options.snet)
-        num_sleeps = 0
-        tried_listing = False
         while left[0] > 0:
             try:
-                with sema:
-                    cont_name, obj_name = queue['ok'].pop()
-                    queue['used'].add((cont_name, obj_name))
-                tried_listing = False
-                conn.delete_object(cont_name, obj_name)
-                left[0] -= 1
-            except KeyError:
-                if num_sleeps > 1:
-                    if not tried_listing:
-                        with sema:
-                            fill_queue_from_listings(options, queue)
-                        tried_listing = True
-                        continue
-                    left[0] = 0
-                    print "Nothing more to delete!!"
-                    break
-                num_sleeps += 1
-                sleep(1)
+                with options.delete_queue_sema:
+                    cont_name, obj_name = options.delete_queue.pop(0)
+            except IndexError:
+                sleep(.1)
                 continue
+            if cont_name is False and obj_name is False:
+                print 'Not enough to delete; final results will be incorrect!'
+                left[0] = 0
+                break
+            left[0] -= 1
+            conn.delete_object(cont_name, obj_name)
             sleep(sleep_amount)
 
 
-def do_object_puts(left, sleep_amount, options, queue, sema):
+def do_object_puts(left, sleep_amount, options):
     if options.direct:
         while left[0] > 0:
             left[0] -= 1
@@ -229,17 +247,13 @@ def do_object_puts(left, sleep_amount, options, queue, sema):
             obj_data = '0' * options.object_size
             cont_name = get_rand_container_name(options.num_containers)
             name_ok = False
-            while not name_ok:
-                obj_name = uuid4().hex
-                if obj_name not in queue['used']:
-                    name_ok = True
+            obj_name = uuid4().hex
             conn.put_object(cont_name,
                             obj_name, obj_data, content_length=len(obj_data))
-            queue['ok'].add((cont_name, obj_name))
             sleep(sleep_amount)
 
 
-def do_container_heads(left, sleep_amount, options, extra, extra2):
+def do_container_heads(left, sleep_amount, options):
     if options.direct:
         while left[0] > 0:
             left[0] -= 1
@@ -261,7 +275,7 @@ TEST_FUNCS = [do_listings, do_object_puts,
               do_container_heads, do_object_deletes]
 
 
-def run_test(number, options, arg, queue, sema):
+def run_test(number, options, arg):
     begin = time()
     iterations = 1
     concurrency = 1
@@ -292,9 +306,12 @@ def run_test(number, options, arg, queue, sema):
     print 'Running test %s %s times at %s concurrency' % \
           (number, iterations, concurrency)
     left = [iterations]
+    test_func = TEST_FUNCS[number - 1]
+    if test_func == do_object_deletes:
+        gpool.spawn(keep_delete_queue_filled, left, options)
+    sleep()
     for _ in xrange(concurrency):
-        gpool.spawn(TEST_FUNCS[number - 1], left, sleep_amount,
-                    options, queue, sema)
+        gpool.spawn(test_func, left, sleep_amount, options)
     last = 0
     tick = time()
     while left[0] > 0:
@@ -389,6 +406,8 @@ Examples:
     parser.add_option('-n', '--container-name', dest='container_name',
                       default='walt',
                       help='Override default container name (walt).')
+    parser.add_option('--delete-marker', dest='delete_marker', default=None,
+                      help='Indicates the starting marker for deletions.')
     args = argv[1:]
     if not args:
         args.append('-h')
@@ -444,13 +463,15 @@ container server testing.'''.strip('\n')
         options.preauthurl, options.preauthtoken = \
            get_auth(options.auth, options.user, options.key, snet=options.snet)
     gpool = GreenPool()
-    queue = {'ok': set(), 'used': set()}
-    sema = Semaphore()
+    options.delete_queue_sema = Semaphore()
+    options.delete_queue = []
+    options.delete_markers = dict((n, options.delete_marker)
+        for n in container_names(options.num_containers))
     for arg in args:
         i = 0
         while i < len(arg) and arg[i].isdigit():
             i += 1
-        gpool.spawn(run_test, int(arg[:i]), options, arg[i:], queue, sema)
+        gpool.spawn(run_test, int(arg[:i]), options, arg[i:])
     gpool.waitall()
     print 'All tests finished: %.03fs' % (time() - begin)
     if direct_exceptions:
