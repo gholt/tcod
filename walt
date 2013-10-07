@@ -16,7 +16,7 @@ from eventlet import GreenPool, sleep, Timeout
 from eventlet.semaphore import Semaphore
 
 from swift.common.bufferedhttp import http_connect
-from swift.common.client import get_auth, ClientException, Connection
+from swiftclient import get_auth, ClientException, Connection
 from swift.common.direct_client import direct_get_container, \
     direct_head_container, retry
 from swift.common.utils import normalize_timestamp
