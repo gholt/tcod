@@ -1,6 +1,6 @@
 function processLine(e) {
     var line = e.target;
-    switch (line.getAttribute("type")) {
+    switch (line.getAttribute("_type")) {
         case "reply":
         case "topic":
             var textnode = line.lastChild.firstChild;
@@ -13,7 +13,7 @@ function processLine(e) {
                 if (trim > 0) {
                     thetopic = thetopic.substr(trim + 5);
                 }
-                newdiv.innerHTML = thetopic;
+                newdiv.innerHTML = thetopic.replace(/</g, '&lt;');
                 line.appendChild(newdiv);
             }
             break;
