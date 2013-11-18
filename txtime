@@ -2,7 +2,13 @@
 import sys
 import time
 
-import swift.common.utils
+def get_trans_id_time(trans_id):
+    if len(trans_id) >= 34 and trans_id[:2] == 'tx' and trans_id[23] == '-':
+        try:
+            return int(trans_id[24:34], 16)
+        except ValueError:
+            pass
+    return None
 
-t = swift.common.utils.get_trans_id_time(sys.argv[1])
+t = get_trans_id_time(sys.argv[1])
 print t, time.asctime(time.gmtime(t))
