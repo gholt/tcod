@@ -1,0 +1,3 @@
+#!/bin/bash
+
+( python /home/greg/XKCD-password-generator/xkcd_password.py -w /home/greg/XKCD-password-generator/2of12.txt -n 2 -c 5 ; python /home/greg/XKCD-password-generator/xkcd_password.py -w /home/greg/XKCD-password-generator/2of12.txt -n 3 -c 5 )  | shuf
