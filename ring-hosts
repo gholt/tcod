@@ -1,0 +1,4 @@
+#!/usr/bin/python
+from sys import argv
+from swift.common.ring.ring import Ring
+print ','.join(sorted(set(node['ip'] for node in Ring(argv[1]).devs if node)))
