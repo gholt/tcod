@@ -14,6 +14,9 @@ set shiftwidth=4
 " Actual tab characters are shown as 4 spaces.
 set tabstop=4
 
+" Don't add two spaces when joining lines with punctuation.
+set nojoinspaces
+
 " Keep indentation from line to line.
 set autoindent
 
@@ -29,7 +32,6 @@ inoremap # X#
 
 " Tries to match tabbing with the shiftwidth.
 set smarttab
-
 
 " Allows backspace to work in all situations
 set backspace=indent,eol,start
@@ -62,19 +64,21 @@ set showmatch
 " Try to keep 2 extra lines of context at the top and bottom of the screen.
 set scrolloff=2
 
-" Show the line number, column number, and percentage within file on stat line.
-set ruler
+" Makes long lines not break mid-word
+set linebreak
+
+" Underline a line at or past 80 characters.
+" :hi LineTooLong cterm=underline
+" :au BufWinEnter * let w:m2=matchadd('LineTooLong', '\%>80v.\+', -1)
 
 " Status line setup.
-set statusline=%<%f\ [%{&ff}]\ %m%=[%b\ %B]\ \ %l,%c%V\ %P
+set ruler
+set laststatus=2
+set statusline=%<%f\ %{&ff}%R%M%=%l:%c\ %p%%
+
 
 " Show commands and selection area size
 set showcmd
-
-
-" Don't add two spaces when joining lines with punctuation.
-set nojoinspaces
-
 
 " Tell vim we have a 16-color terminal.
 set t_Co=16
@@ -84,28 +88,99 @@ set title
 
 " Turns off any audible or visible bell.
 set visualbell t_vb=
+autocmd GUIEnter * set vb t_vb=
+set noeb
+set novb
 
 " Turn on mouse mode.
 set mouse=a
 set ttymouse=xterm2
 
 " Font for GUI versions.
-set guifont=Inconsolata-dz:h13
+set guifont=Consolas:h14
 
 " e = gui tabs, g = menu items greyable, m = menu bar, r = right scrollbar
 set guioptions=egm
+
+" Modified, file name, full file path
+set guitablabel=%M\ %t\ %F
+
+" Nicer file name tab-completion.
+set wildmenu
+
+
+" Maps \b to list the current buffers. Then you can type a buffer number, or a
+" partial buffer name and hit tab, then enter to switch to it.
+map <Leader>b :ls<CR>:b<Space>
 
 " Maps \cd to change the current directory to the same directory as the file
 " in the current buffer.
 map <Leader>cd :cd %:p:h<CR>
 
-" Maps \b to list the current buffers.
-map <Leader>b :ls<CR>:b<Space>
+" Maps \l to run (lint) flake8 on the current file.
+function! gholt:lint()
+    set lazyredraw
+    cclose
+    let l:grepformat_orig=&grepformat
+    let l:grepprg_orig=&grepprg
+    let &grepformat="%f:%l:%c: %m\,%f:%l: %m"
+    let &grepprg="flake8"
+    silent grep %
+    let &grepformat=l:grepformat_orig
+    let &grepprg=l:grepprg_orig
+    cwindow
+    set nolazyredraw
+    redraw!
+    if getqflist() == []
+        echo "flake8 clean"
+    endif
+endfunction
+map <Leader>l :call gholt:lint()<CR>
 
-" Maps \p to toggling paste and nopaste modes.
+" Maps \L to run (lint) flake8 from the current working directory.
+function! gholt:lintcwd()
+    set lazyredraw
+    cclose
+    let l:grepformat_orig=&grepformat
+    let l:grepprg_orig=&grepprg
+    let &grepformat="%f:%l:%c: %m\,%f:%l: %m"
+    let &grepprg="flake8"
+    silent grep .
+    let &grepformat=l:grepformat_orig
+    let &grepprg=l:grepprg_orig
+    cwindow
+    set nolazyredraw
+    redraw!
+    if getqflist() == []
+        echo "flake8 clean"
+    endif
+endfunction
+map <Leader>L :call gholt:lintcwd()<CR>
+
+" Maps \p to toggling paste and nopaste modes. This lets you turn off
+" auto-indenting, etc. while pasting in a big block of text.
 nnoremap <Leader>p :set invpaste paste?<CR>
-imap <Leader>p <C-O><Leader>p
-set pastetoggle=<Leader>p
 
-" Makes long lines not break mid-word
-set linebreak
+" Maps \s to toggle spellcheck mode.
+nnoremap <Leader>s :set invspell spell?<CR>
+
+" Maps \w to toggle textwidth between 72 and 0.
+function! gholt:tw()
+    if &tw == 0
+        set tw=72
+        echo "tw=72"
+    else
+        set tw=0
+        echo "tw=0"
+    endif
+endfunction
+nnoremap <Leader>w :call gholt:tw()<CR>
+
+
+" " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " "
+" General Tips
+"
+
+" Replace double blank lines with single blank lines :%s/\n\{3,}/\r\r/e
+
+" To list spelling alternatives: z=

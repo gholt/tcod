@@ -1,0 +1,31 @@
+#!/usr/bin/python
+
+import sys
+import urllib
+
+from swift.common import ring
+from swift.common.utils import hash_path
+
+
+parts = '/'.join(sys.argv[1:]).split('/')
+for index, part in enumerate(parts):
+    if part.startswith('MossoCloudFS_') or part.startswith('JungleDisk_'):
+        break
+else:
+    raise Exception('sorry')
+account = parts[index]
+container = parts[index + 1]
+obj = '/'.join(parts[index + 2:])
+hash_str = hash_path(account, container, obj)
+ring = ring.Ring('/etc/swift/object.ring.gz')
+part, nodes = ring.get_nodes(account, container, obj)
+target = "%s/%s/%s" % (account, container, obj)
+msg = []
+print 'ALL ON ONE LINE CURLS:'
+for node in nodes:
+    msg.append('curl -I "http://%s:%s/%s/%s/%s"' \
+        % (node['ip'], node['port'], node['device'], part, urllib.quote(target)))
+print ' ; '.join(msg)
+print
+print 'SEARCH EVERYWHERE FOR OBJECT:'
+print 'dsh -g all-zones -M -c -F25 "sudo bash -c \'if [ -e /srv/node/*/objects/%s/%s/%s ] ; then echo /srv/node/*/objects/%s/%s/%s ; fi\'"' % (part, hash_str[-3:], hash_str, part, hash_str[-3:], hash_str)
