@@ -68,7 +68,7 @@ set showmatch
 set scrolloff=2
 
 " Makes long lines not break mid-word
-set linebreak
+" set linebreak
 
 " Underline a line at or past 80 characters.
 " :hi LineTooLong cterm=underline
