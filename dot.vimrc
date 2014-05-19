@@ -1,3 +1,6 @@
+" Assume we're running with a black on white screen.
+set background=light
+
 " Run in vim-mode instead of strict vi-mode.
 set nocompatible
 
@@ -137,7 +140,7 @@ function! gholt:lint()
 endfunction
 map <Leader>l :call gholt:lint()<CR>
 
-" Maps \L to run (lint) flake8 from the current working directory.
+" Python: Maps \L to run (lint) flake8 from the current working directory.
 function! gholt:lintcwd()
     set lazyredraw
     cclose
@@ -156,6 +159,46 @@ function! gholt:lintcwd()
     endif
 endfunction
 map <Leader>L :call gholt:lintcwd()<CR>
+
+" Golang: Maps \g to run "./g".
+function! gholt:gobuild()
+    set lazyredraw
+    cclose
+    let l:grepformat_orig=&grepformat
+    let l:grepprg_orig=&grepprg
+    let &grepformat="%-G#\ %.%#,%A%f:%l:%c:\ %m,%A%f:%l:\ %m,%C%*\\s%m,%-G%.%#"
+    let &grepprg="./g"
+    silent grep
+    let &grepformat=l:grepformat_orig
+    let &grepprg=l:grepprg_orig
+    cwindow
+    set nolazyredraw
+    redraw!
+    if getqflist() == []
+        echo "./g returned clean"
+    endif
+endfunction
+map <Leader>g :call gholt:gobuild()<CR>
+
+" Golang: Maps \G to run "./g full".
+function! gholt:gobuildfull()
+    set lazyredraw
+    cclose
+    let l:grepformat_orig=&grepformat
+    let l:grepprg_orig=&grepprg
+    let &grepformat="%-G#\ %.%#,%A%f:%l:%c:\ %m,%A%f:%l:\ %m,%C%*\\s%m,%-G%.%#"
+    let &grepprg="./g full"
+    silent grep
+    let &grepformat=l:grepformat_orig
+    let &grepprg=l:grepprg_orig
+    cwindow
+    set nolazyredraw
+    redraw!
+    if getqflist() == []
+        echo "./g returned clean"
+    endif
+endfunction
+map <Leader>G :call gholt:gobuildfull()<CR>
 
 " Maps \p to toggling paste and nopaste modes. This lets you turn off
 " auto-indenting, etc. while pasting in a big block of text.
@@ -180,7 +223,9 @@ nnoremap <Leader>w :call gholt:tw()<CR>
 " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " "
 " General Tips
 "
-
-" Replace double blank lines with single blank lines :%s/\n\{3,}/\r\r/e
-
-" To list spelling alternatives: z=
+" Replace double blank lines with single blank lines
+"   :%s/\n\{3,}/\r\r/e
+" To list spelling alternatives
+"   z=
+" Look for long lines
+"   :match Error /\%>80v/
