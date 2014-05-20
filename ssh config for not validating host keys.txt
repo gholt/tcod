@@ -1,4 +1,0 @@
-Host *
-StrictHostKeyChecking no
-CheckHostIP no
-ForwardX11 no
