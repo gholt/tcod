@@ -8,7 +8,6 @@ pathadd() {
 
 pathadd ~/bin
 pathadd ~/tcod/bin
-pathadd ~/Go/bin
 
 hostname=`hostname`
 if [ "$hostname" = "ML304ZFFT3" ] ; then
