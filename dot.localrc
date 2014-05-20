@@ -1,5 +1,15 @@
 #!/bin/bash
 
+pathadd() {
+    if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
+        PATH="${PATH:+"$PATH:"}$1"
+    fi
+}
+
+pathadd ~/bin
+pathadd ~/tcod/bin
+pathadd ~/Go/bin
+
 hostname=`hostname`
 if [ "$hostname" = "ML304ZFFT3" ] ; then
     hostname="laptop"
