@@ -1,0 +1,13 @@
+#!/bin/bash
+git log --format='%ad %aN' --date=short $@ | python  -c '
+from sys import stdin
+who2years = {}
+for line in stdin:
+    date, who = line.split(" ", 1)
+    year, _, _ = date.split("-")
+    who2years.setdefault(who.strip(), set()).add(int(year))
+for who, years in who2years.items():
+    if len(years) > 1:
+        print "%d-%d %s" % (min(years), max(years), who)
+    else:
+        print "%d %s" % (years.pop(), who)' | sort
