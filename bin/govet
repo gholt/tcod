@@ -1,0 +1,3 @@
+#!/bin/bash
+
+go tool vet -composites=false -shadowstrict=true .
