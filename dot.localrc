@@ -15,7 +15,12 @@ if [ "$hostname" = "ML304ZFFT3" ] ; then
 elif [ "$hostname" = "admin1" ] ; then
     hostname=`hostname -d | cut -d. -f1`
 fi
-export PS1="\[\e]0;\u@$hostname\a\]\u@$hostname:\W\$ "
+
+if [ "$TERM" = "linux" ] ; then
+    export PS1="\u@$hostname:\W\$ "
+else
+    export PS1="\[\e]0;\u@$hostname\a\]\u@$hostname:\W\$ "
+fi
 
 alias dshact='dsh -m`/home/gholt/ring-hosts /etc/swift/account.ring.gz`'
 alias dshcon='dsh -m`/home/gholt/ring-hosts /etc/swift/container.ring.gz`'
