@@ -160,14 +160,14 @@ function! gholt:lintcwd()
 endfunction
 map <Leader>L :call gholt:lintcwd()<CR>
 
-" Golang: Maps \g to run "./g".
+" Golang: Maps \g to run gogo
 function! gholt:gobuild()
     set lazyredraw
     cclose
     let l:grepformat_orig=&grepformat
     let l:grepprg_orig=&grepprg
     let &grepformat="%-G#\ %.%#,%A%f:%l:%c:\ %m,%A%f:%l:\ %m,%C%*\\s%m,%-G%.%#"
-    let &grepprg="./g"
+    let &grepprg="gogo"
     silent grep
     let &grepformat=l:grepformat_orig
     let &grepprg=l:grepprg_orig
@@ -175,19 +175,19 @@ function! gholt:gobuild()
     set nolazyredraw
     redraw!
     if getqflist() == []
-        echo "./g returned clean"
+        echo "gogo returned clean"
     endif
 endfunction
 map <Leader>g :call gholt:gobuild()<CR>
 
-" Golang: Maps \G to run "./g full".
+" Golang: Maps \G to run gogo
 function! gholt:gobuildfull()
     set lazyredraw
     cclose
     let l:grepformat_orig=&grepformat
     let l:grepprg_orig=&grepprg
     let &grepformat="%-G#\ %.%#,%A%f:%l:%c:\ %m,%A%f:%l:\ %m,%C%*\\s%m,%-G%.%#"
-    let &grepprg="./g full"
+    let &grepprg="gogo"
     silent grep
     let &grepformat=l:grepformat_orig
     let &grepprg=l:grepprg_orig
@@ -195,7 +195,7 @@ function! gholt:gobuildfull()
     set nolazyredraw
     redraw!
     if getqflist() == []
-        echo "./g returned clean"
+        echo "gogo full returned clean"
     endif
 endfunction
 map <Leader>G :call gholt:gobuildfull()<CR>

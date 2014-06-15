@@ -1,0 +1,21 @@
+#!/bin/bash
+set -e
+
+pkgs=`find . -type f -name '*.go' -not -exec grep -q '^package main$' {} \; -exec helper-gogo {} \; | sort -u`
+mains=`find . -type f -name '*.go' -exec grep -q '^package main$' {} \; -exec helper-gogo {} \; | sort -u`
+src=`readlink -m $GOPATH/src`
+
+if [ "$1" = "full" ] ; then
+    for pkg in $pkgs $mains ; do
+        gofmt -w "$src/$pkg"
+    done
+    go build -a $pkgs
+    for pkg in $pkgs $mains ; do
+        go test $pkg
+        go tool vet -composites=false -shadowstrict=true "$src/$pkg"
+    done
+    go install -a $mains
+else
+    go build $pkgs
+    go install $mains
+fi
