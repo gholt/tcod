@@ -182,21 +182,15 @@ map <Leader>g :call gholt:gobuild()<CR>
 
 " Golang: Maps \G to run gogo
 function! gholt:gobuildfull()
-    set lazyredraw
     cclose
     let l:grepformat_orig=&grepformat
     let l:grepprg_orig=&grepprg
     let &grepformat="%-G#\ %.%#,%A%f:%l:%c:\ %m,%A%f:%l:\ %m,%C%*\\s%m,%-G%.%#"
-    let &grepprg="gogo"
-    silent grep
+    let &grepprg="gogo full"
+    grep
     let &grepformat=l:grepformat_orig
     let &grepprg=l:grepprg_orig
     cwindow
-    set nolazyredraw
-    redraw!
-    if getqflist() == []
-        echo "gogo full returned clean"
-    endif
 endfunction
 map <Leader>G :call gholt:gobuildfull()<CR>
 
