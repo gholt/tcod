@@ -22,6 +22,12 @@ else
     export PS1="\[\e]0;\u@$hostname\a\]\u@$hostname:\W\$ "
 fi
 
-alias dshact='dsh -m`/home/gholt/ring-hosts /etc/swift/account.ring.gz`'
-alias dshcon='dsh -m`/home/gholt/ring-hosts /etc/swift/container.ring.gz`'
-alias dshobj='dsh -m`/home/gholt/ring-hosts /etc/swift/object.ring.gz`'
+export EDITOR=vi
+
+function vigo {
+    if [ $# -eq 0 ]; then
+        $EDITOR `find . -name '*.go'`
+    else
+        $EDITOR `find "$@" -name '*.go'`
+    fi
+}
