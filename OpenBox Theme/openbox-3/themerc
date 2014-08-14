@@ -5,12 +5,12 @@
 border.width: 1
 window.active.border.color                          : #000000
 window.inactive.border.color                        : #000000
-window.active.title.separator.color                 : #EDEDED
-window.inactive.title.separator.color               : #EDEDED
+window.active.title.separator.color                 : #FFFFFF
+window.inactive.title.separator.color               : #FFFFFF
 window.client.padding.width                         : 5
 window.client.padding.height                        : 5
-window.active.client.color                          : #EDEDED
-window.inactive.client.color                        : #EDEDED
+window.active.client.color                          : #FFFFFF
+window.inactive.client.color                        : #FFFFFF
 window.handle.width                                 : 0
 
 
@@ -19,13 +19,13 @@ window.active.label.text.color                      : #000000
 window.inactive.label.text.color                    : #555555
 
 window.active.title.bg                              : solid flat border
-window.active.title.bg.color                        : #EDEDED
-window.active.title.bg.border.color                 : #EDEDED
+window.active.title.bg.color                        : #FFFFFF
+window.active.title.bg.border.color                 : #FFFFFF
 window.active.label.bg                              : parentrelative
 
 window.inactive.title.bg                            : solid flat border
-window.inactive.title.bg.color                      : #EDEDED
-window.inactive.title.bg.border.color               : #EDEDED
+window.inactive.title.bg.color                      : #FFFFFF
+window.inactive.title.bg.border.color               : #FFFFFF
 window.inactive.label.bg                            : parentrelative
 
 
