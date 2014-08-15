@@ -8,6 +8,8 @@ pathadd() {
 
 pathadd ~/bin
 pathadd ~/tcod/bin
+pathadd ~/Go/root/bin
+pathadd ~/Go/bin
 
 hostname=`hostname`
 if [ "$hostname" = "ML304ZFFT3" ] ; then
@@ -21,6 +23,9 @@ if [ "$TERM" = "linux" ] ; then
 else
     export PS1="\[\e]0;\u@$hostname\a\]\u@$hostname:\W\$ "
 fi
+
+export GOROOT=~/Go/root
+export GOPATH=~/Go
 
 export EDITOR=vi
 
