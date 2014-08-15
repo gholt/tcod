@@ -1,0 +1,12 @@
+#!/bin/bash
+
+for s in * ; do
+    f=$(basename "$s")
+    e="${s##*.}"
+    b="${f%.*}"
+    if [ "$e" = "JPG" ] ; then
+        echo mv -i "\"$f\"" "\"$b.jpg\""
+        mv -i "$f" "$b.jpg"
+        chmod a-x "$b.jpg"
+    fi
+done
