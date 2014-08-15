@@ -1,0 +1,5 @@
+#!/bin/bash
+
+j=`md5sum $1 | cut -d' ' -f1`.${1##*.}
+mv -i $1 $j
+echo $j
