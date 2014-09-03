@@ -20,6 +20,8 @@ fi
 
 if [ "$TERM" = "linux" ] ; then
     export PS1="\u@$hostname:\W\$ "
+elif [ "$TERM" = "screen" ] ; then
+    export PS1="\u@$hostname:\W\$ "
 else
     export PS1="\[\e]0;\u@$hostname\a\]\u@$hostname:\W\$ "
 fi
@@ -36,3 +38,5 @@ function vigo {
         $EDITOR `find "$@" -name '*.go'`
     fi
 }
+
+alias Screen='screen -dRS `hostname | sed "s/.*/\u&/"`'
