@@ -1,0 +1,98 @@
+#!/bin/sh # dash bash ksh # !zsh (issues). G. Nixon, 12/2013. Public domain.
+
+## 'linkread' or 'fullpath' or (you choose) is a little tool to recursively
+## dereference symbolic links (ala 'readlink') until the originating file
+## is found. This is effectively the same function provided in stdlib.h as
+## 'realpath' and on the command line in GNU 'readlink -f'.
+
+## Neither of these tools, however, are particularly accessible on the many
+## systems that do not have the GNU implementation of readlink, nor ship
+## with a system compiler (not to mention the requisite knowledge of C).
+
+## This script is written with portability and (to the extent possible, speed)
+## in mind, hence the use of printf for echo and case statements where they
+## can be substituded for test, though I've had to scale back a bit on that.
+
+## It is (to the best of my knowledge) written in standard POSIX shell, and
+## has been tested with bash-as-bin-sh, dash, and ksh93. zsh seems to have
+## issues with it, though I'm not sure why; so probably best to avoid for now.
+
+## Particularly useful (in fact, the reason I wrote this) is the fact that
+## it can be used within a shell script to find the path of the script itself.
+## (I am sure the shell knows this already; but most likely for the sake of
+## security it is not made readily available. The implementation of "$0"
+## specificies that the $0 must be the location of **last** symbolic link in
+## a chain, or wherever it resides in the path.) This can be used for some
+## ...interesting things, like self-duplicating and self-modifiying scripts.
+
+## Currently supported are three errors: whether the file specified exists
+## (ala ENOENT), whether its target exists/is accessible; and the special
+## case of when a sybolic link references itself "foo -> foo": a common error
+## for beginners, since 'ln' does not produce an error if the order of link
+## and target are reversed on the command line. (See POSIX signal ELOOP.)
+
+## It would probably be rather simple to write to use this as a basis for
+## a pure shell implementation of the 'symlinks' util included with Linux.
+
+## As an aside, the amount of code below **completely** belies the amount
+## effort it took to get this right -- but I guess that's coding for you.
+
+##===-------------------------------------------------------------------===##
+
+for argv; do :; done # Last parameter on command line, for options parsing.
+
+## Error messages. Use functions so that we can sub in when the error occurs.
+
+recurses(){ printf "Self-referential:\n\t$argv ->\n\t$argv\n" ;}
+dangling(){ printf "Broken symlink:\n\t$argv ->\n\t"$(readlink "$argv")"\n" ;}
+errnoent(){ printf "No such file: "$@"\n" ;} # Borrow a horrible signal name.
+
+# Probably best not to install as 'pathfull', if you can avoid it.
+
+pathfull(){ cd "$(dirname "$@")"; link="$(readlink "$(basename "$@")")"
+
+## 'test and 'ls' report different status for bad symlinks, so we use this.
+
+ if [ ! -e "$@" ]; then if $(ls -d "$@" 2>/dev/null) 2>/dev/null;  then
+    errnoent 1>&2; exit 1; elif [ ! -e "$@" -a "$link" = "$@" ];   then
+    recurses 1>&2; exit 1; elif [ ! -e "$@" ] && [ ! -z "$link" ]; then
+    dangling 1>&2; exit 1; fi
+ fi
+
+## Not a link, but there might be one in the path, so 'cd' and 'pwd'.
+
+ if [ -z "$link" ]; then if [ "$(dirname "$@" | cut -c1)" = '/' ]; then
+   printf "$@\n"; exit 0; else printf "$(pwd)/$(basename "$@")\n"; fi; exit 0
+ fi
+
+## Walk the symlinks back to the origin. Calls itself recursivly as needed.
+
+ while [ "$link" ]; do
+   cd "$(dirname "$link")"; newlink="$(readlink "$(basename "$link")")"
+   case "$newlink" in
+    "$link") dangling 1>&2 && exit 1                                       ;;
+         '') printf "$(pwd)/$(basename "$link")\n"; exit 0                 ;;
+          *) link="$newlink" && pathfull "$link"                           ;;
+   esac
+ done
+ printf "$(pwd)/$(basename "$newlink")\n"
+}
+
+## Demo. Install somewhere deep in the filesystem, then symlink somewhere 
+## else, symlink again (maybe with a different name) elsewhere, and link
+## back into the directory you started in (or something.) The absolute path
+## of the script will always be reported in the usage, along with "$0".
+
+if [ -z "$argv" ]; then scriptname="$(pathfull "$0")"
+
+# Yay ANSI l33t codes! Fancy.
+ printf "\n\033[3mfrom/as: \033[4m$0\033[0m\n\n\033[1mUSAGE:\033[0m   "
+ printf "\033[4m$scriptname\033[24m [ link | file | dir ]\n\n         "
+ printf "Recursive readlink for the authoritative file, symlink after "
+ printf "symlink.\n\n\n         \033[4m$scriptname\033[24m\n\n        "
+ printf " From within an invocation of a script, locate the script's "
+ printf "own file\n         (no matter where it has been linked or "
+ printf "from where it is being called).\n\n"
+
+else pathfull "$@"
+fi
