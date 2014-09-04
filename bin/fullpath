@@ -1,4 +1,5 @@
-#!/bin/sh # dash bash ksh # !zsh (issues). G. Nixon, 12/2013. Public domain.
+#!/bin/sh
+# dash bash ksh # !zsh (issues). G. Nixon, 12/2013. Public domain.
 
 ## 'linkread' or 'fullpath' or (you choose) is a little tool to recursively
 ## dereference symbolic links (ala 'readlink') until the originating file
