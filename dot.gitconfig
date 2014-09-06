@@ -1,0 +1,8 @@
+[user]
+	email = blah@example.com
+	name = Blah Example
+[push]
+	default = simple
+[core]
+	excludesfile = /home/blah/.gitignore
+	pager = diff-highlight | less -+$LESS -FR
