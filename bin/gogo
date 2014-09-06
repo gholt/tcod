@@ -5,8 +5,6 @@ pkgs=`find . -type f -name '*.go' -not -exec grep -q '^package main$' {} \; -exe
 mains=`find . -type f -name '*.go' -exec grep -q '^package main$' {} \; -exec helper-gogo {} \; | sort -u`
 src=`fullpath $GOPATH/src`
 
-echo $pkgs
-echo $mains
 if [ "$1" = "full" ] ; then
     for pkg in $pkgs $mains ; do
         gofmt -w "$src/$pkg"
