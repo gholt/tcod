@@ -12,7 +12,7 @@ if [ "$1" = "full" ] ; then
     go build -a $pkgs
     for pkg in $pkgs $mains ; do
         go test $pkg
-        go tool vet -composites=false -shadowstrict=true "$src/$pkg"
+        go tool vet -shadowstrict=true "$src/$pkg"
     done
     go install $mains
 else
