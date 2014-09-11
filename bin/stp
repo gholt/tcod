@@ -1,0 +1,2 @@
+#!/bin/bash
+osascript -e 'tell application "Terminal" to set bounds of front window to {1030, 23, 1680, 1050}'
