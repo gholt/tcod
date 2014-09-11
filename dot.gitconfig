@@ -5,4 +5,7 @@
 	default = simple
 [core]
 	excludesfile = /home/blah/.gitignore
-	pager = diff-highlight | less -+$LESS -FR
+# For OS X
+#	pager = less -r
+# For others
+#	pager = diff-highlight | less -+$LESS -FR

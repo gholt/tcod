@@ -1,11 +1,11 @@
 #3.3
 shell -/bin/bash
 shelltitle Shell
-deflogin off
 vbell off
 defscrollback 5000
 termcapinfo xterm 'hs:ts=\E]2;:fs=\007:ds=\E]2;screen\007'
-hardstatus string "%S - %n %t - %D %Y-%m-%d %c"
+backtick 0 30 30 sh -c 'echo $HOST_TITLE'
+hardstatus string "%` - %n %t - %D %Y-%m-%d %c"
 
 attrcolor d "=d"
 attrcolor u "=u"
@@ -13,3 +13,4 @@ attrcolor b "=b"
 attrcolor r "=r"
 attrcolor s "=s"
 attrcolor B "=B"
+

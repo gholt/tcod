@@ -1,5 +1,7 @@
 #!/bin/bash
 
+umask 0077
+
 pathadd() {
     if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
         PATH="${PATH:+"$PATH:"}$1"
@@ -8,25 +10,24 @@ pathadd() {
 
 pathadd ~/bin
 pathadd ~/tcod/bin
-pathadd ~/Go/root/bin
 pathadd ~/Go/bin
 
-hostname=`hostname`
-if [ "$hostname" = "ML304ZFFT3" ] ; then
-    hostname="laptop"
-elif [ "$hostname" = "admin1" ] ; then
-    hostname=`hostname -d | cut -d. -f1`
+export HOST=`hostname`
+if [ "$HOST" = "ML304ZFFT3" ] ; then
+    HOST="rackspace"
+elif [ "$HOST" = "admin1" ] ; then
+    HOST=`HOST -d | cut -d. -f1`
 fi
+export HOST_TITLE=`python -c "print '$HOST'.title()"`
 
 if [ "$TERM" = "linux" ] ; then
-    export PS1="\u@$hostname:\W\$ "
+    export PS1="\u@$HOST:\W\$ "
 elif [ "$TERM" = "screen" ] ; then
-    export PS1="\u@$hostname:\W\$ "
+    export PS1="\u@$HOST:\W\$ "
 else
-    export PS1="\[\e]0;\u@$hostname\a\]\u@$hostname:\W\$ "
+    export PS1="\[\e]0;\u@$HOST\a\]\u@$HOST:\W\$ "
 fi
 
-export GOROOT=~/Go/root
 export GOPATH=~/Go
 
 export EDITOR=vi
@@ -39,4 +40,4 @@ function vigo {
     fi
 }
 
-alias Screen='screen -dRS `hostname | sed "s/.*/\u&/"`'
+alias Screen='screen -dRS `echo $HOST | sed "s/.*/\u&/"`'
