@@ -12,7 +12,7 @@ pathadd ~/bin
 pathadd ~/tcod/bin
 pathadd ~/Go/bin
 
-export HOST=`hostname`
+export HOST=`hostname | cut -d. -f1`
 if [ "$HOST" = "ML304ZFFT3" ] ; then
     HOST="rackspace"
 elif [ "$HOST" = "admin1" ] ; then
