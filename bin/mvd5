@@ -1,5 +1,9 @@
 #!/bin/bash
 
-j=`md5sum $1 | cut -d' ' -f1`.${1##*.}
-mv -i $1 $j
+if [ "$OSTYPE" = "darwin13" ] ; then
+    j=`md5 -q "$1"`.${1##*.}
+else
+    j=`md5sum "$1" | cut -d' ' -f1`.${1##*.}
+fi
+mv -i "$1" $j
 echo $j
