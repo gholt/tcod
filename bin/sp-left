@@ -1,6 +1,2 @@
 #!/bin/bash
-if [ "$HOST" = "ML304ZFFT3" ] ; then
-    osascript -e "tell application \"$1\" to set bounds of front window to {0, 23, 1030, 1003}"
-else
-    osascript -e "tell application \"$1\" to set bounds of front window to {0, 22, 1030, 1003}"
-fi
+osascript -e "tell application \"$1\" to set bounds of front window to {0, 23, 1030, 1003}"

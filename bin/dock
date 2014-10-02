@@ -1,3 +1,7 @@
 #!/bin/bash
-defaults write com.apple.dock tilesize -int 30
+if [ "$HOST" = "rackspace" ] ; then
+    defaults write com.apple.dock tilesize -int 36
+else
+    defaults write com.apple.dock tilesize -int 30
+fi
 killall Dock
