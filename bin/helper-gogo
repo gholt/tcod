@@ -1,7 +1,0 @@
-#!/bin/bash
-
-dir=`dirname $1`
-dir=`fullpath $dir`
-src=`fullpath $GOPATH/src`
-pkg=${dir#$src/}
-echo $pkg
