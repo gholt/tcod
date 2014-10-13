@@ -1,7 +1,7 @@
 These are the colors I usually use for ANSI Escape Sequences:
 
 Name                  | R   | G   | B   | Hex
---------------------: | --: | --: | --: | ------
+:-------------------- | --: | --: | --: | ------
 Foreground            |   0 |   0 |   0 | 000000
 Background            | 255 | 255 | 255 | ffffff
 CursorColor           | 255 | 160 |   0 | ffa000
