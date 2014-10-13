@@ -24,3 +24,5 @@ Color12            |  75 | 100 | 255 | 4b64ff
 Color13            | 200 | 100 | 255 | c864ff
 Color14            | 100 | 200 | 255 | 64c8ff
 Color15            | 255 | 255 | 255 | ffffff
+
+Slack Colors: `#D9DFE5,#D9DFE5,#72879A,#FFFFFF,#D9DFE5,#000000,#50A050,#FFA000`
