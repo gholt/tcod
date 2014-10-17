@@ -32,12 +32,5 @@ export GOPATH=~/Go
 
 export EDITOR=vi
 
-function vigo {
-    if [ $# -eq 0 ]; then
-        $EDITOR `find . -name '*.go'`
-    else
-        $EDITOR `find "$@" -name '*.go'`
-    fi
-}
-
 alias Screen='screen -dRS `echo $HOST | sed "s/.*/\u&/"`'
+alias vigo='vim +"args "`find . -name '"'"'*.go'"'"'`'
