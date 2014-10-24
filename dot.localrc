@@ -33,4 +33,4 @@ export GOPATH=~/Go
 export EDITOR=vi
 
 alias Screen='screen -dRS `echo $HOST | sed "s/.*/\u&/"`'
-alias vigo='vim +"args "`find . -name '"'"'*.go'"'"' | sed "s,^\./,,"`'
+alias vigo='vim +"args "`find . -name '"'"'*.go'"'"' | sed "s,^\./,," | sort`'
