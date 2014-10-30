@@ -29,6 +29,7 @@ else
 fi
 
 export GOPATH=~/Go
+export GOROOT=~/Go/root
 
 export EDITOR=vi
 
