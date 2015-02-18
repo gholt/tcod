@@ -35,3 +35,5 @@ export EDITOR=vi
 
 alias Screen='screen -dRS `echo $HOST | sed "s/.*/\u&/"`'
 alias vigo='vim +"args "`find . -name '"'"'*.go'"'"' | sed "s,^\./,," | sort`'
+alias gogo='go install ./...'
+alias gogogo='(go fmt ./... && go vet ./... && go test -a ./... && go install -a ./...)'
