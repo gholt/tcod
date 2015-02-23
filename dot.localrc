@@ -3,7 +3,7 @@
 umask 0077
 
 pathadd() {
-    if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
+    if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]] ; then
         PATH="${PATH:+"$PATH:"}$1"
     fi
 }
@@ -44,4 +44,8 @@ if [ -d ~/Go ] ; then
     alias vigo='vim +"args "`find . -name '"'"'*.go'"'"' | sed "s,^\./,," | sort`'
     alias gogo='go install ./...'
     alias gogogo='(go fmt ./... && go vet ./... && go test -a ./... && go install -a ./...)'
+fi
+
+if [ -f /Applications/Karabiner.app/Contents/Library/bin/karabiner ] ; then
+    alias karabiner=/Applications/Karabiner.app/Contents/Library/bin/karabiner
 fi
