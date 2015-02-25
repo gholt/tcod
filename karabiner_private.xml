@@ -10,11 +10,11 @@
         </url>
     </vkopenurldef>
     <item>
-        <name>Shift + Fn + Cursor-Left = Resize leftward</name>
+        <name>Fn + Command + Cursor-Left = Resize leftward</name>
         <identifier>private.resizeleft</identifier>
         <autogen>
             __KeyToKey__
-            KeyCode::CURSOR_LEFT, ModifierFlag::SHIFT_L | ModifierFlag::FN,
+            KeyCode::CURSOR_LEFT, ModifierFlag::FN | ModifierFlag::COMMAND_L,
             KeyCode::VK_OPEN_URL_SHELL_resizeleft,
         </autogen>
     </item>
@@ -28,11 +28,11 @@
         </url>
     </vkopenurldef>
     <item>
-        <name>Shift + Fn + Cursor-Right = Resize rightward</name>
+        <name>Fn + Command + Cursor-Right = Resize rightward</name>
         <identifier>private.resizeright</identifier>
         <autogen>
             __KeyToKey__
-            KeyCode::CURSOR_RIGHT, ModifierFlag::SHIFT_L | ModifierFlag::FN,
+            KeyCode::CURSOR_RIGHT, ModifierFlag::FN | ModifierFlag::COMMAND_L,
             KeyCode::VK_OPEN_URL_SHELL_resizeright,
         </autogen>
     </item>
@@ -46,11 +46,11 @@
         </url>
     </vkopenurldef>
     <item>
-        <name>Shift + Fn + Cursor-Up = Resize to full</name>
+        <name>Fn + Command + Cursor-Up = Resize to full</name>
         <identifier>private.resizefull</identifier>
         <autogen>
             __KeyToKey__
-            KeyCode::CURSOR_UP, ModifierFlag::SHIFT_L | ModifierFlag::FN,
+            KeyCode::CURSOR_UP, ModifierFlag::FN | ModifierFlag::COMMAND_L,
             KeyCode::VK_OPEN_URL_SHELL_resizefull,
         </autogen>
     </item>
