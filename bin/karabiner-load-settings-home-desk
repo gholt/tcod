@@ -1,0 +1,19 @@
+#!/bin/sh
+
+cli=/Applications/Karabiner.app/Contents/Library/bin/karabiner
+
+$cli set remap.commandL2optionL 1
+/bin/echo -n .
+$cli set repeat.wait 30
+/bin/echo -n .
+$cli set repeat.initial_wait 250
+/bin/echo -n .
+$cli set private.resizeleftx 1
+/bin/echo -n .
+$cli set private.resizerightx 1
+/bin/echo -n .
+$cli set remap.optionL2commandL 1
+/bin/echo -n .
+$cli set private.resizefullx 1
+/bin/echo -n .
+/bin/echo
