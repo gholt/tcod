@@ -60,7 +60,7 @@
         <name>KeyCode::VK_OPEN_URL_SHELL_resizeleftx</name>
         <url type="shell">
             <![CDATA[
-                /usr/bin/osascript -e 'tell application "System Events" to set frontmostapp to name of (first item of (application processes whose frontmost is true))' -e 'tell application frontmostapp to set bounds of front window to {0, 23, 1254, 1076}'
+                /usr/bin/osascript -e 'tell application "System Events" to set frontmostapp to name of (first item of (application processes whose frontmost is true))' -e 'tell application frontmostapp to set bounds of front window to {0, 23, 1270, 1076}'
             ]]>
         </url>
     </vkopenurldef>
@@ -78,7 +78,7 @@
         <name>KeyCode::VK_OPEN_URL_SHELL_resizerightx</name>
         <url type="shell">
             <![CDATA[
-                /usr/bin/osascript -e 'tell application "System Events" to set frontmostapp to name of (first item of (application processes whose frontmost is true))' -e 'tell application frontmostapp to set bounds of front window to {1254, 23, 1920, 1076}'
+                /usr/bin/osascript -e 'tell application "System Events" to set frontmostapp to name of (first item of (application processes whose frontmost is true))' -e 'tell application frontmostapp to set bounds of front window to {1270, 23, 1920, 1076}'
             ]]>
         </url>
     </vkopenurldef>
