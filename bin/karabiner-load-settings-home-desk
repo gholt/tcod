@@ -16,6 +16,8 @@ $cli set private.resizerightx 1
 /bin/echo -n .
 $cli set remap.optionL2commandL 1
 /bin/echo -n .
+$cli set remap.optionrcommandr 1
+/bin/echo -n .
 $cli set private.resizefullx 1
 /bin/echo -n .
 /bin/echo
