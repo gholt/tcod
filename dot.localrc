@@ -4,14 +4,13 @@ shopt -s expand_aliases
 umask 0077
 
 pathadd() {
-    if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
+    if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]] ; then
         PATH="${PATH:+"$PATH:"}$1"
     fi
 }
 
 pathadd ~/bin
 pathadd ~/tcod/bin
-pathadd ~/Go/bin
 
 export HOST=`hostname | cut -d. -f1`
 if [ "$HOST" = "ML304ZFFT3" ] ; then
@@ -29,12 +28,25 @@ else
     export PS1="\[\e]0;\u@$HOST\a\]\u@$HOST:\W\$ "
 fi
 
-export GOPATH=~/Go
-export GOROOT=~/Go/root
-
 export EDITOR=vi
 
 alias Screen='screen -dRS `echo $HOST | sed "s/.*/\u&/"`'
-alias vigo='vim +"args "`find . -name '"'"'*.go'"'"' | sed "s,^\./,," | sort`'
-alias gogo='go install ./...'
-alias gogogo='(go fmt ./... && go vet ./... && go test -a ./... && go install -a ./...)'
+
+if [ -f ~/Python/bin/activate ] ; then
+    export VIRTUAL_ENV_DISABLE_PROMPT=true
+    source ~/Python/bin/activate
+    alias vipy='vim +"args "`find . -name '"'"'*.py'"'"' | sed "s,^\./,," | sort`'
+fi
+
+if [ -d ~/Go ] ; then
+    pathadd ~/Go/bin
+    export GOPATH=~/Go
+    export GOROOT=~/Go/root
+    alias vigo='vim +"args "`find . -name '"'"'*.go'"'"' | sed "s,^\./,," | sort`'
+    alias gogo='go install ./...'
+    alias gogogo='(go fmt ./... && go vet ./... && go test -a ./... && go install -a ./...)'
+fi
+
+if [ -f /Applications/Karabiner.app/Contents/Library/bin/karabiner ] ; then
+    alias karabiner=/Applications/Karabiner.app/Contents/Library/bin/karabiner
+fi
