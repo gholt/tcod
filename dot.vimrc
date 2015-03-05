@@ -111,6 +111,9 @@ set guitablabel=%M\ %t\ %F
 " Nicer file name tab-completion.
 set wildmenu
 
+" Let bash aliases, etc. work.
+let $BASH_ENV = "~/.localrc"
+
 
 " Maps \b to list the current buffers. Then you can type a buffer number, or a
 " partial buffer name and hit tab, then enter to switch to it.
