@@ -1,10 +1,10 @@
 [user]
-	email = blah@example.com
-	name = Blah Example
+	email = gregory.holt@gmail.com
+	name = Gregory Holt
 [push]
 	default = simple
 [core]
-	excludesfile = /home/blah/.gitignore
+	excludesfile = ~/.gitignore
 	pager = view -
 [color]
 	diff = never
