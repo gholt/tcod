@@ -15,8 +15,6 @@ pathadd ~/tcod/bin
 export HOST=`hostname | cut -d. -f1`
 if [ "$HOST" = "ML304ZFFT3" ] ; then
     HOST="rackspace"
-elif [ "$HOST" = "admin1" ] ; then
-    HOST=`HOST -d | cut -d. -f1`
 fi
 export HOST_TITLE=`python -c "print '$HOST'.title()"`
 
@@ -30,13 +28,8 @@ fi
 
 export EDITOR=vi
 
+alias duu='du -chs `ls -a | grep -v '"'"'^\.$'"'"' | grep -v '"'"'^\.\.$'"'"' | grep -v '"'"'^\.Trash$'"'"'`'
 alias Screen='screen -dRS `echo $HOST | sed "s/.*/\u&/"`'
-
-if [ -f ~/Python/bin/activate ] ; then
-    export VIRTUAL_ENV_DISABLE_PROMPT=true
-    source ~/Python/bin/activate
-    alias vipy='vim +"args "`find . -name '"'"'*.py'"'"' | sed "s,^\./,," | sort`'
-fi
 
 if [ -d ~/Go ] ; then
     pathadd ~/Go/bin
@@ -47,6 +40,32 @@ if [ -d ~/Go ] ; then
     alias gogogo='(go fmt ./... && go vet ./... && go test -a ./... && go install -a ./...)'
 fi
 
+if [ -f ~/Python/bin/activate ] ; then
+    export VIRTUAL_ENV_DISABLE_PROMPT=true
+    source ~/Python/bin/activate
+    alias vipy='vim +"args "`find . -name '"'"'*.py'"'"' | sed "s,^\./,," | sort`'
+    alias cleanc='find . -type f -name '"'"'*.py[co]'"'"' -exec rm {} \;'
+fi
+
 if [ -f /Applications/Karabiner.app/Contents/Library/bin/karabiner ] ; then
     alias karabiner=/Applications/Karabiner.app/Contents/Library/bin/karabiner
+fi
+
+if [ -f /usr/bin/defaults ] ; then
+    alias dock='(defaults write com.apple.dock tilesize -int 35 && killall Dock)'
+fi
+
+if [ -f /usr/bin/osascript ] ; then
+    gp() {
+        osascript -e 'tell application "'$1'" to get bounds of front window'
+    }
+    sp-full() {
+        osascript -e 'tell application "'$1'" to set bounds of front window to {0, 23, 1680, 1046}'
+    }
+    sp-left() {
+        osascript -e 'tell application "'$1'" to set bounds of front window to {0, 23, 1030, 1046}'
+    }
+    sp-right() {
+        osascript -e 'tell application "'$1'" to set bounds of front window to {1030, 23, 1680, 1046}'
+    }
 fi

@@ -1,2 +1,0 @@
-#!/bin/bash
-osascript -e 'tell application "'$1'" to get bounds of front window'

@@ -1,2 +1,0 @@
-#!/bin/bash
-osascript -e "tell application \"$1\" to set bounds of front window to {1030, 23, 1680, 1046}"

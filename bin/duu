@@ -1,2 +1,0 @@
-#!/bin/bash
-du -chs `ls -a | grep -v '^\.$' | grep -v '^\.\.$' | grep -v '^\.Trash$'`
