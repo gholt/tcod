@@ -28,14 +28,14 @@ fi
 
 export EDITOR=vi
 
-alias duu='du -chs `ls -a | grep -v '"'"'^\.$'"'"' | grep -v '"'"'^\.\.$'"'"' | grep -v '"'"'^\.Trash$'"'"'`'
+alias duu='find . -depth 1 -not -name . -not -name .. -not -name .Trash -print0 | xargs -0 du -chs'
 alias Screen='screen -dRS `echo $HOST | sed "s/.*/\u&/"`'
 
 if [ -d ~/Go ] ; then
     pathadd ~/Go/bin
     export GOPATH=~/Go
     export GOROOT=~/Go/root
-    alias vigo='vim +"args "`find . -not -path '"'"'./Godeps/*'"'"' -name '"'"'*.go'"'"' | sed "s,^\./,," | sort`'
+    alias vigo='vim +"args "`find . -not -path '"'"'*/Godeps/*'"'"' -name '"'"'*.go'"'"' | sed "s,^\./,," | sort`'
     alias gogo='go install ./...'
     alias gogogo='(go fmt ./... && go vet ./... && go test -a ./... && go install -a ./...)'
 fi
