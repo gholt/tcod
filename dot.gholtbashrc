@@ -35,7 +35,7 @@ if [ -d ~/Go ] ; then
     pathadd ~/Go/bin
     export GOPATH=~/Go
     export GOROOT=~/Go/root
-    alias vigo='vim +"args "`find . -not -path '"'"'*/Godeps/*'"'"' -name '"'"'*.go'"'"' | sed "s,^\./,," | sort`'
+    alias vigo='vim +"args "`find . -not -path '"'"'*/Godeps/*'"'"' -name '"'"'*.go'"'"' -or -name '"'"'*.got'"'"' | sed "s,^\./,," | sort`'
     alias gogo='go install ./...'
     alias gogogo='(go fmt ./... && go vet ./... && go test -a ./... && go install -a ./...)'
 fi
