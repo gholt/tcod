@@ -112,7 +112,7 @@ set guitablabel=%M\ %t\ %F
 set wildmenu
 
 " Let bash aliases, etc. work.
-let $BASH_ENV = "~/.localrc"
+let $BASH_ENV = "~/.gholtbashrc"
 
 
 " Maps \b to list the current buffers. Then you can type a buffer number, or a
