@@ -13,7 +13,8 @@ pathadd ~/bin
 pathadd ~/tcod/bin
 
 export HOST=`hostname | cut -d. -f1`
-if [ "$HOST" = "ML304ZFFT3" ] ; then
+export HOST=`python -c "print '$HOST'.lower()"`
+if [ "$HOST" = "ml304zfft3" ] ; then
     HOST="rackspace"
 fi
 export HOST_TITLE=`python -c "print '$HOST'.title()"`
