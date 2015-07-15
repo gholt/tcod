@@ -39,6 +39,7 @@ if [ -d ~/Go ] ; then
     alias vigo='vim +"args "`find . -not -path '"'"'*/Godeps/*'"'"' -name '"'"'*.go'"'"' -or -name '"'"'*.got'"'"' | sed "s,^\./,," | sort`'
     alias gogo='go install ./...'
     alias gogogo='(go fmt ./... && go vet ./... && go test -a ./... && go install -a ./...)'
+    alias goc='go test -coverprofile=goc.tmp ./... && go tool cover -html=goc.tmp'
 fi
 
 if [ -f ~/Python/bin/activate ] ; then
