@@ -5,7 +5,7 @@ umask 0077
 
 pathadd() {
     if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]] ; then
-        PATH="${PATH:+"$PATH:"}$1"
+        PATH="$1:$PATH"
     fi
 }
 
@@ -33,13 +33,14 @@ alias duu='find . -depth 1 -not -name . -not -name .. -not -name .Trash -print0 
 alias Screen='screen -dRS `echo $HOST | sed "s/.*/\u&/"`'
 
 if [ -d ~/Go ] ; then
+    pathadd ~/Go/root/bin
     pathadd ~/Go/bin
     export GOPATH=~/Go
     export GOROOT=~/Go/root
     alias vigo='vim +"args "`find . -not -path '"'"'*/Godeps/*'"'"' -name '"'"'*.go'"'"' -or -name '"'"'*.got'"'"' | sed "s,^\./,," | sort`'
     alias gogo='go install ./...'
     alias gogogo='(go fmt ./... && go vet ./... && go test -a -cpu=1,3,7 ./... && go install -a ./...)'
-    alias goc='go test -cpu=1,3,7 -coverprofile=.goc.tmp && go tool cover -html=.goc.tmp'
+    alias goc='go test -timeout 30m -cpu=1,3,7 -coverprofile=.goc.tmp && go tool cover -html=.goc.tmp'
 fi
 
 if [ -f ~/Python/bin/activate ] ; then
