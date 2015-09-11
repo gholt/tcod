@@ -32,11 +32,13 @@ export EDITOR=vi
 alias duu='find . -depth 1 -not -name . -not -name .. -not -name .Trash -print0 | xargs -0 du -chs'
 alias Screen='screen -dRS `echo $HOST | sed "s/.*/\u&/"`'
 
-if [ -d ~/Go ] ; then
-    pathadd ~/Go/root/bin
-    pathadd ~/Go/bin
-    export GOPATH=~/Go
-    export GOROOT=~/Go/root
+if [ -d ~/bin ] ; then
+    pathadd ~/bin
+fi
+
+if [ -d ~/go ] ; then
+    pathadd ~/go/bin
+    export GOPATH=~
     alias vigo='vim +"args "`find . -not -path '"'"'*/Godeps/*'"'"' -name '"'"'*.go'"'"' -or -name '"'"'*.got'"'"' | sed "s,^\./,," | sort`'
     alias gogo='go install ./...'
     alias gogogo='(go fmt ./... && go vet ./... && go test -a -cpu=1,3,7 ./... && go install -a ./...)'
