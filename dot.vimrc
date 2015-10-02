@@ -185,15 +185,21 @@ map <Leader>g :call gholt:gobuild()<CR>
 
 " Golang: Maps \G to run: go vet ./... && go test -a ./... && go install -a ./...
 function! gholt:gobuildfull()
+    set lazyredraw
     cclose
     let l:grepformat_orig=&grepformat
     let l:grepprg_orig=&grepprg
     let &grepformat="%-G#\ %.%#,%A%f:%l:%c:\ %m,%A%f:%l:\ %m,%C%*\\s%m,%-G%.%#"
-    let &grepprg="go vet ./... && go test -a ./... && go install -a ./..."
-    grep
+    let &grepprg="(go vet ./... && go test -a ./... && go install -a ./...)"
+    silent grep
     let &grepformat=l:grepformat_orig
     let &grepprg=l:grepprg_orig
     cwindow
+    set nolazyredraw
+    redraw!
+    if getqflist() == []
+        echo "go vet ./... && go test -a ./... && go install -a ./... returned clean"
+    endif
 endfunction
 map <Leader>G :call gholt:gobuildfull()<CR>
 
