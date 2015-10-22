@@ -22,6 +22,10 @@ au BufNewFile *.go setfiletype go | setlocal fileencoding=utf-8 fileformat=unix
 au BufRead *.go call s:gofiletype_pre()
 au BufReadPost *.go call s:gofiletype_post()
 
+au BufNewFile *.got setfiletype go | setlocal fileencoding=utf-8 fileformat=unix
+au BufRead *.got call s:gofiletype_pre()
+au BufReadPost *.got call s:gofiletype_post()
+
 au BufRead,BufNewFile *.tmpl set filetype=gohtmltmpl
 
 " vim:ts=4:sw=4:et
