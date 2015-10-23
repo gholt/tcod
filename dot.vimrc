@@ -88,6 +88,7 @@ set t_Co=16
 
 " Updates the title of compatible term programs.
 set title
+set titlestring=%f
 
 " Turns off any audible or visible bell.
 set visualbell t_vb=
