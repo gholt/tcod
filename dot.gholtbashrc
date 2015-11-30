@@ -43,8 +43,11 @@ fi
 if [ -d ~/go ] ; then
     pathadd ~/go/bin
     export GOPATH=~
+    lsgo() {
+        find . -not -path '*/Godeps/*' -not -name '*_GEN_*' -name '*.go' -or -name '*.got' | sed 's,^\./,,' | sort
+    }
     vigo() {
-        vim `find . -not -path '*/Godeps/*' -not -name '*_GEN_*' -name '*.go' -or -name '*.got' | sed 's,^\./,,' | sort`
+        vim `lsgo`
     }
     gogo() {
         go install ./...
