@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>AMApplicationBuild</key>
-	<string>417</string>
+	<string>419</string>
 	<key>AMApplicationVersion</key>
 	<string>2.6</string>
 	<key>AMDocumentVersion</key>
@@ -51,7 +51,7 @@
 				<key>ActionParameters</key>
 				<dict>
 					<key>source</key>
-					<string>on run {input, parameters}		tell application "System Events"		set frontmostApplication to name of the first process whose frontmost is true	end tell		tell application frontmostApplication		set bounds of front window to {0, 0, 1030, 1046}	end tell		return inputend run</string>
+					<string>on run {input, parameters}		tell application "System Events"		set frontmostApplication to name of the first process whose frontmost is true	end tell		tell application frontmostApplication		set bounds of front window to {0, 23, 1030, 1004}	end tell		return inputend run</string>
 				</dict>
 				<key>BundleIdentifier</key>
 				<string>com.apple.Automator.RunScript</string>
@@ -107,7 +107,7 @@ end run</string>
 				<key>isViewVisible</key>
 				<true/>
 				<key>location</key>
-				<string>324.000000:316.000000</string>
+				<string>318.500000:316.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/Run AppleScript.action/Contents/Resources/Base.lproj/main.nib</string>
 			</dict>
