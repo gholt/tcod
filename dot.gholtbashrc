@@ -29,6 +29,10 @@ fi
 
 export EDITOR=vi
 
+shufl() {
+    perl -MList::Util -e 'print List::Util::shuffle <>'
+}
+
 duu() {
     find . -depth 1 -not -name . -not -name .. -not -name .Trash -print0 | xargs -0 du -chs
 }
