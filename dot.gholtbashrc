@@ -89,10 +89,10 @@ if [ -f /usr/bin/osascript ] ; then
         osascript -e 'tell application "'$1'" to set bounds of front window to {0, 23, 1680, 1004}'
     }
     sp-left() {
-        osascript -e 'tell application "'$1'" to set bounds of front window to {0, 23, 1030, 1004}'
+        osascript -e 'tell application "'$1'" to set bounds of front window to {0, 23, 650, 1004}'
     }
     sp-right() {
-        osascript -e 'tell application "'$1'" to set bounds of front window to {1030, 23, 1680, 1004}'
+        osascript -e 'tell application "'$1'" to set bounds of front window to {650, 23, 1680, 1004}'
     }
     sp-center() {
         osascript -e 'tell application "'$1'" to set bounds of front window to {400, 250, 1280, 800}'
