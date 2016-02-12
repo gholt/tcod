@@ -1,0 +1,5 @@
+#!/bin/bash
+
+. ~/.gholtbashrc
+
+cd ~/src/github.com/gholt/ && agogogo && cd ~/src/github.com/pandemicsyn/ && agogogo && cd ~/src/github.com/creiht/ && agogogo

@@ -1,0 +1,40 @@
+#!/bin/bash
+
+function pull {
+    o=`git pull | grep -v "Already up-to-date."`
+    if [ "$o" ] ; then
+        echo -n "█████ "
+        pwd
+        echo "$o"
+    fi
+}
+
+function pullupstream {
+    o=`git pull upstream master 2>&1 | grep -v "Already up-to-date." | grep -v "^From github.com:" | grep -v " * branch            master     -> FETCH_HEAD"`
+    if [ "$o" ] ; then
+        echo -n "█████ "
+        pwd
+        echo "$o"
+    fi
+}
+
+cd ~/src/github.com/gholt
+for i in * ; do
+    cd $i
+    pull
+    cd ..
+done
+cd ~/src/github.com/pandemicsyn
+for i in * ; do
+    cd $i
+    pull
+    pullupstream
+    cd ..
+done
+cd ~/src/github.com/creiht
+for i in * ; do
+    cd $i
+    pull
+    pullupstream
+    cd ..
+done
