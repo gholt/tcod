@@ -124,45 +124,45 @@ map <Leader>b :ls<CR>:b<Space>
 " in the current buffer.
 map <Leader>cd :cd %:p:h<CR>
 
-" Maps \l to run (lint) flake8 on the current file.
-function! gholt:lint()
-    set lazyredraw
-    cclose
-    let l:grepformat_orig=&grepformat
-    let l:grepprg_orig=&grepprg
-    let &grepformat="%f:%l:%c: %m\,%f:%l: %m"
-    let &grepprg="flake8"
-    silent grep %
-    let &grepformat=l:grepformat_orig
-    let &grepprg=l:grepprg_orig
-    cwindow
-    set nolazyredraw
-    redraw!
-    if getqflist() == []
-        echo "flake8 clean"
-    endif
-endfunction
-map <Leader>l :call gholt:lint()<CR>
+" Python: Maps \l to run (lint) flake8 on the current file.
+" function! gholt:lint()
+"     set lazyredraw
+"     cclose
+"     let l:grepformat_orig=&grepformat
+"     let l:grepprg_orig=&grepprg
+"     let &grepformat="%f:%l:%c: %m\,%f:%l: %m"
+"     let &grepprg="flake8"
+"     silent grep %
+"     let &grepformat=l:grepformat_orig
+"     let &grepprg=l:grepprg_orig
+"     cwindow
+"     set nolazyredraw
+"     redraw!
+"     if getqflist() == []
+"         echo "flake8 clean"
+"     endif
+" endfunction
+" map <Leader>l :call gholt:lint()<CR>
 
 " Python: Maps \L to run (lint) flake8 from the current working directory.
-function! gholt:lintcwd()
-    set lazyredraw
-    cclose
-    let l:grepformat_orig=&grepformat
-    let l:grepprg_orig=&grepprg
-    let &grepformat="%f:%l:%c: %m\,%f:%l: %m"
-    let &grepprg="flake8"
-    silent grep .
-    let &grepformat=l:grepformat_orig
-    let &grepprg=l:grepprg_orig
-    cwindow
-    set nolazyredraw
-    redraw!
-    if getqflist() == []
-        echo "flake8 clean"
-    endif
-endfunction
-map <Leader>L :call gholt:lintcwd()<CR>
+" function! gholt:lintcwd()
+"     set lazyredraw
+"     cclose
+"     let l:grepformat_orig=&grepformat
+"     let l:grepprg_orig=&grepprg
+"     let &grepformat="%f:%l:%c: %m\,%f:%l: %m"
+"     let &grepprg="flake8"
+"     silent grep .
+"     let &grepformat=l:grepformat_orig
+"     let &grepprg=l:grepprg_orig
+"     cwindow
+"     set nolazyredraw
+"     redraw!
+"     if getqflist() == []
+"         echo "flake8 clean"
+"     endif
+" endfunction
+" map <Leader>L :call gholt:lintcwd()<CR>
 
 " Golang: Maps \g to run: go install
 function! gholt:gobuild()
@@ -203,6 +203,26 @@ function! gholt:gobuildfull()
     endif
 endfunction
 map <Leader>G :call gholt:gobuildfull()<CR>
+
+" Golang:: Maps \l to run golint.
+function! gholt:golint()
+    set lazyredraw
+    cclose
+    let l:grepformat_orig=&grepformat
+    let l:grepprg_orig=&grepprg
+    let &grepformat="%f:%l:%c: %m"
+    let &grepprg="golint ./..."
+    silent grep
+    let &grepformat=l:grepformat_orig
+    let &grepprg=l:grepprg_orig
+    cwindow
+    set nolazyredraw
+    redraw!
+    if getqflist() == []
+        echo "golint clean"
+    endif
+endfunction
+map <Leader>l :call gholt:golint()<CR>
 
 " Maps \p to toggling paste and nopaste modes. This lets you turn off
 " auto-indenting, etc. while pasting in a big block of text.
