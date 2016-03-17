@@ -125,7 +125,7 @@ map <Leader>b :ls<CR>:b<Space>
 map <Leader>cd :cd %:p:h<CR>
 
 " Python: Maps \l to run (lint) flake8 on the current file.
-" function! gholt:lint()
+" function! GHolt_lint()
 "     set lazyredraw
 "     cclose
 "     let l:grepformat_orig=&grepformat
@@ -142,10 +142,10 @@ map <Leader>cd :cd %:p:h<CR>
 "         echo "flake8 clean"
 "     endif
 " endfunction
-" map <Leader>l :call gholt:lint()<CR>
+" map <Leader>l :call GHolt_lint()<CR>
 
 " Python: Maps \L to run (lint) flake8 from the current working directory.
-" function! gholt:lintcwd()
+" function! GHolt_lintcwd()
 "     set lazyredraw
 "     cclose
 "     let l:grepformat_orig=&grepformat
@@ -162,10 +162,10 @@ map <Leader>cd :cd %:p:h<CR>
 "         echo "flake8 clean"
 "     endif
 " endfunction
-" map <Leader>L :call gholt:lintcwd()<CR>
+" map <Leader>L :call GHolt_lintcwd()<CR>
 
 " Golang: Maps \g to run: go install
-function! gholt:gobuild()
+function! GHolt_gobuild()
     set lazyredraw
     cclose
     let l:grepformat_orig=&grepformat
@@ -182,10 +182,10 @@ function! gholt:gobuild()
         echo "go install returned clean"
     endif
 endfunction
-map <Leader>g :call gholt:gobuild()<CR>
+map <Leader>g :call GHolt_gobuild()<CR>
 
 " Golang: Maps \G to run: go build, vet, test, install
-function! gholt:gobuildfull()
+function! GHolt_gobuildfull()
     set lazyredraw
     cclose
     let l:grepformat_orig=&grepformat
@@ -202,10 +202,10 @@ function! gholt:gobuildfull()
         echo "go build, vet, test, install returned clean"
     endif
 endfunction
-map <Leader>G :call gholt:gobuildfull()<CR>
+map <Leader>G :call GHolt_gobuildfull()<CR>
 
 " Golang:: Maps \l to run golint.
-function! gholt:golint()
+function! GHolt_golint()
     set lazyredraw
     cclose
     let l:grepformat_orig=&grepformat
@@ -222,7 +222,7 @@ function! gholt:golint()
         echo "golint clean"
     endif
 endfunction
-map <Leader>l :call gholt:golint()<CR>
+map <Leader>l :call GHolt_golint()<CR>
 
 " Maps \p to toggling paste and nopaste modes. This lets you turn off
 " auto-indenting, etc. while pasting in a big block of text.
@@ -232,7 +232,7 @@ nnoremap <Leader>p :set invpaste paste?<CR>
 nnoremap <Leader>s :set invspell spell?<CR>
 
 " Maps \w to toggle textwidth between 72 and 0.
-function! gholt:tw()
+function! GHolt_tw()
     if &tw == 0
         set tw=72
         echo "tw=72"
@@ -241,7 +241,7 @@ function! gholt:tw()
         echo "tw=0"
     endif
 endfunction
-nnoremap <Leader>w :call gholt:tw()<CR>
+nnoremap <Leader>w :call GHolt_tw()<CR>
 
 
 " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " "
