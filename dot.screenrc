@@ -14,3 +14,8 @@ attrcolor r "=r"
 attrcolor s "=s"
 attrcolor B "=B"
 
+# To make this useful, you probably want an ~/.ssh/rc of:
+#   if test "$SSH_AUTH_SOCK" ; then
+#       ln -sf $SSH_AUTH_SOCK ~/.ssh/ssh_auth_sock
+#   fi
+setenv SSH_AUTH_SOCK $HOME/.ssh/ssh_auth_sock
