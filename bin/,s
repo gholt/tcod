@@ -27,3 +27,9 @@ for i in * ; do
     check
     cd ..
 done
+cd ~/src/github.com/letterj
+for i in * ; do
+    cd $i
+    check
+    cd ..
+done

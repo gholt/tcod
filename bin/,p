@@ -38,3 +38,10 @@ for i in * ; do
     pullupstream
     cd ..
 done
+cd ~/src/github.com/letterj
+for i in * ; do
+    cd $i
+    pull
+    pullupstream
+    cd ..
+done
