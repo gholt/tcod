@@ -43,7 +43,7 @@ Screen() {
 
 if [ -d ~/go ] ; then
     pathadd ~/go/bin
-    export GOPATH=~
+    export GOROOT=~
     lsgo() {
         find . -not -path '*/Godeps/*' -not -name '*_GEN_*' -not -name '*.pb.go' -name '*.go' -or -name '*.got' -or -name '*.proto' | sed 's,^\./,,' | sort
     }
