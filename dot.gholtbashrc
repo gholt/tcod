@@ -46,7 +46,7 @@ if [ -d ~/go ] ; then
     export GOROOT=~/go
     export GOPATH=~
     lsgo() {
-        find . -not -path '*/Godeps/*' -not -name '*_GEN_*' -not -name '*.pb.go' -name '*.go' -or -name '*.got' -or -name '*.proto' | sed 's,^\./,,' | sort
+        find . -not -path '*/Godeps/*' -not -path '*/vendor/*' -not -name '*_GEN_*' -not -name '*.pb.go' -name '*.go' -or -name '*.got' -or -name '*.proto' | sed 's,^\./,,' | sort
     }
     vigo() {
         vim `lsgo`
