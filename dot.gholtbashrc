@@ -54,20 +54,23 @@ if hash go 2>/dev/null ; then
     vigo() {
         vim `lsgo`
     }
+    golist() {
+        go list ./... | grep -v /vendor/
+    }
     gogo() {
-        go install `go list ./... | grep -v /vendor/`
+        go install `golist`
     }
     gogogo() {
-        go fmt `go list ./... | grep -v /vendor/` && go vet `go list ./... | grep -v /vendor/` && go test --timeout=1m -cpu=1,3,7 `go list ./... | grep -v /vendor/` && go install `go list ./... | grep -v /vendor/`
+        go fmt `golist` && go vet `golist` && go test --timeout=1m -cpu=1,3,7 `golist` && go install `golist`
     }
     goc() {
         go test --timeout=1m -cpu=1,3,7 -coverprofile=.goc.tmp && go tool cover -html=.goc.tmp
     }
     agogo() {
-        go install -a `go list ./... | grep -v /vendor/`
+        go install -a `golist`
     }
     agogogo() {
-        go fmt `go list ./... | grep -v /vendor/` && go vet `go list ./... | grep -v /vendor/` && go test --timeout=1m -v -a -cpu=1,3,7 `go list ./... | grep -v /vendor/` && go install -a `go list ./... | grep -v /vendor/`
+        go fmt `golist` && go vet `golist` && go test --timeout=1m -v -a -cpu=1,3,7 `golist` && go install -a `golist`
     }
     agoc() {
         go test --timeout=1m -v -a -cpu=1,3,7 -coverprofile=.goc.tmp && go tool cover -html=.goc.tmp
