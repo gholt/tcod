@@ -51,7 +51,7 @@
 				<key>ActionParameters</key>
 				<dict>
 					<key>source</key>
-					<string>on run {input, parameters}		tell application "System Events"		set frontmostApplication to name of the first process whose frontmost is true	end tell		tell application frontmostApplication		set bounds of front window to {651, 23, 1680, 1004}	end tell		return inputend run</string>
+					<string>on run {input, parameters}		tell application "System Events"		set frontmostApplication to name of the first process whose frontmost is true	end tell		tell application frontmostApplication		set bounds of front window to {651, 23, 1438, 851}	end tell		return inputend run</string>
 				</dict>
 				<key>BundleIdentifier</key>
 				<string>com.apple.Automator.RunScript</string>
@@ -107,7 +107,7 @@ end run</string>
 				<key>isViewVisible</key>
 				<true/>
 				<key>location</key>
-				<string>323.500000:316.000000</string>
+				<string>366.000000:316.000000</string>
 				<key>nibPath</key>
 				<string>/System/Library/Automator/Run AppleScript.action/Contents/Resources/Base.lproj/main.nib</string>
 			</dict>
