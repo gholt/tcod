@@ -171,7 +171,7 @@ function! GHolt_gobuild()
     let l:grepformat_orig=&grepformat
     let l:grepprg_orig=&grepprg
     let &grepformat="%-G#\ %.%#,%A%f:%l:%c:\ %m,%A%f:%l:\ %m,%C%*\\s%m,%-G%.%#"
-    let &grepprg="go install ./..."
+    let &grepprg="gogo"
     silent grep
     let &grepformat=l:grepformat_orig
     let &grepprg=l:grepprg_orig
@@ -191,7 +191,7 @@ function! GHolt_gobuildfull()
     let l:grepformat_orig=&grepformat
     let l:grepprg_orig=&grepprg
     let &grepformat="%-G#\ %.%#,%A%f:%l:%c:\ %m,%A%f:%l:\ %m,%C%*\\s%m,%-G%.%#"
-    let &grepprg="(go build ./... && go vet ./... && go test -a ./... && go install -a ./...)"
+    let &grepprg="gogogo"
     silent grep
     let &grepformat=l:grepformat_orig
     let &grepprg=l:grepprg_orig
