@@ -49,10 +49,16 @@ fi
 if hash go 2>/dev/null ; then
     export GOPATH=~
     lsgo() {
+        find . -maxdepth 1 -not -path '*/Godeps/*' -not -path '*/vendor/*' -not -name "zzz_*" -not -name '*_GEN_*' -not -name '*.pb.go' \( -name '*.go' -or -name '*.got' -or -name '*.proto' \) | sed 's,^\./,,' | sort
+    }
+    lsgor() {
         find . -not -path '*/Godeps/*' -not -path '*/vendor/*' -not -name "zzz_*" -not -name '*_GEN_*' -not -name '*.pb.go' \( -name '*.go' -or -name '*.got' -or -name '*.proto' \) | sed 's,^\./,,' | sort
     }
     vigo() {
         vim `lsgo`
+    }
+    vigor() {
+        vim `lsgor`
     }
     golist() {
         go list ./... | grep -v /vendor/
@@ -63,17 +69,11 @@ if hash go 2>/dev/null ; then
     gogogo() {
         go fmt `golist` && go vet `golist` && go test --timeout=1m -cpu=1,3,7 `golist` && go install `golist`
     }
-    goc() {
-        go test --timeout=1m -cpu=1,3,7 -coverprofile=.goc.tmp && go tool cover -html=.goc.tmp
-    }
     agogo() {
         go install -a `golist`
     }
     agogogo() {
         go fmt `golist` && go vet `golist` && go test --timeout=1m -v -a -cpu=1,3,7 `golist` && go install -a `golist`
-    }
-    agoc() {
-        go test --timeout=1m -v -a -cpu=1,3,7 -coverprofile=.goc.tmp && go tool cover -html=.goc.tmp
     }
 fi
 
@@ -81,6 +81,9 @@ if [ -f ~/Python/bin/activate ] ; then
     export VIRTUAL_ENV_DISABLE_PROMPT=true
     source ~/Python/bin/activate
     vipy() {
+        vim `find . -maxdepth 1 -name '*.py' | sed 's,^\./,,' | sort`
+    }
+    vipyr() {
         vim `find . -name '*.py' | sed 's,^\./,,' | sort`
     }
     cleanc() {
