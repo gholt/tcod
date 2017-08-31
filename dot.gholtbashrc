@@ -11,6 +11,7 @@ pathadd() {
 
 pathadd ~/bin
 pathadd ~/tcod/bin
+pathadd ~/go/bin
 
 export HOST=`hostname | cut -d. -f1`
 export HOST=`python -c "print '$HOST'.lower()"`
@@ -41,13 +42,7 @@ Screen() {
     screen -dRS `echo $HOST | sed "s/.*/\u&/"`
 }
 
-if [ -d ~/go ] ; then
-    pathadd ~/go/bin
-    export GOROOT=~/go
-fi
-
 if hash go 2>/dev/null ; then
-    export GOPATH=~
     lsgo() {
         find . -maxdepth 1 -not -path '*/Godeps/*' -not -path '*/vendor/*' -not -name "zzz_*" -not -name '*_GEN_*' -not -name '*.pb.go' \( -name '*.go' -or -name '*.got' -or -name '*.proto' \) | sed 's,^\./,,' | sort
     }
@@ -60,20 +55,8 @@ if hash go 2>/dev/null ; then
     vigor() {
         vim `lsgor`
     }
-    golist() {
-        go list ./... | grep -v /vendor/
-    }
     gogo() {
-        go install `golist`
-    }
-    gogogo() {
-        go fmt `golist` && go vet `golist` && go test --timeout=1m -cpu=1,3,7 `golist` && go install `golist`
-    }
-    agogo() {
-        go install -a `golist`
-    }
-    agogogo() {
-        go fmt `golist` && go vet `golist` && go test --timeout=1m -v -a -cpu=1,3,7 `golist` && go install -a `golist`
+        gofmt -l -w -s `find . -mindepth 1 -maxdepth 1 -type d -print` && go vet ./... && go test --timeout=1m -cpu=1,3,7 ./... && go install ./...
     }
 fi
 
@@ -88,29 +71,5 @@ if [ -f ~/Python/bin/activate ] ; then
     }
     cleanc() {
         find . -type f -name '*.py[co]' -exec rm {} \;
-    }
-fi
-
-if [ -f /usr/bin/defaults ] ; then
-    dock() {
-        defaults write com.apple.dock tilesize -int 37 && killall Dock
-    }
-fi
-
-if [ -f /usr/bin/osascript ] ; then
-    gp() {
-        osascript -e 'tell application "'$1'" to get bounds of front window'
-    }
-    sp-full() {
-        osascript -e 'tell application "'$1'" to set bounds of front window to {0, 23, 1440, 851}'
-    }
-    sp-left() {
-        osascript -e 'tell application "'$1'" to set bounds of front window to {0, 23, 650, 851}'
-    }
-    sp-right() {
-        osascript -e 'tell application "'$1'" to set bounds of front window to {651, 23, 1440, 851}'
-    }
-    sp-center() {
-        osascript -e 'tell application "'$1'" to set bounds of front window to {200, 90, 1238, 784}'
     }
 fi

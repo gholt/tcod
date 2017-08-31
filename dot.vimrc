@@ -171,7 +171,7 @@ function! GHolt_gobuild()
     let l:grepformat_orig=&grepformat
     let l:grepprg_orig=&grepprg
     let &grepformat="%-G#\ %.%#,%A%f:%l:%c:\ %m,%A%f:%l:\ %m,%C%*\\s%m,%-G%.%#"
-    let &grepprg="gogo"
+    let &grepprg="go install ./..."
     silent grep
     let &grepformat=l:grepformat_orig
     let &grepprg=l:grepprg_orig
@@ -184,14 +184,14 @@ function! GHolt_gobuild()
 endfunction
 map <Leader>g :call GHolt_gobuild()<CR>
 
-" Golang: Maps \G to run: go build, vet, test, install
+" Golang: Maps \G to run: gogo (which is go fmt, vet, test, install)
 function! GHolt_gobuildfull()
     set lazyredraw
     cclose
     let l:grepformat_orig=&grepformat
     let l:grepprg_orig=&grepprg
     let &grepformat="%-G#\ %.%#,%A%f:%l:%c:\ %m,%A%f:%l:\ %m,%C%*\\s%m,%-G%.%#"
-    let &grepprg="gogogo"
+    let &grepprg="gogo"
     silent grep
     let &grepformat=l:grepformat_orig
     let &grepprg=l:grepprg_orig
