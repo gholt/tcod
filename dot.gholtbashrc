@@ -34,8 +34,9 @@ shufl() {
     perl -MList::Util -e 'print List::Util::shuffle <>'
 }
 
+# This doesn't work on Linux yet; need to work on that sometime.
 duu() {
-    find . -depth 1 -not -name . -not -name .. -not -name .Trash -print0 | xargs -0 du -chs
+    find -s . -depth 1 -not -name . -not -name .. -not -name .Trash -print0 | xargs -0 du -chs
 }
 
 Screen() {
