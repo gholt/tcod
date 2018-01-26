@@ -97,8 +97,7 @@ set noeb
 set novb
 
 " Turn on mouse mode.
-set mouse=a
-set ttymouse=xterm2
+set mouse=
 
 " Font for GUI versions.
 set guifont=Consolas:h14
