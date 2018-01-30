@@ -9,8 +9,12 @@ pathadd() {
     fi
 }
 
-pathadd ~/bin
+unalias ls
+
+pathadd ~/.local/bin
+pathadd ~/go-latest/bin
 pathadd ~/tcod/bin
+pathadd ~/bin
 pathadd ~/go/bin
 
 export HOST=`hostname | cut -d. -f1`
