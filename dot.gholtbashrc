@@ -28,6 +28,8 @@ if [ "$TERM" = "linux" ] ; then
     export PS1="\u@$HOST:\W\$ "
 elif [ "$TERM" = "screen" ] ; then
     export PS1="\u@$HOST:\W\$ "
+elif [ "$TERM" = "screen.xterm-256color" ] ; then
+    export PS1="\u@$HOST:\W\$ "
 else
     export PS1="\[\e]0;\u@$HOST\a\]\u@$HOST:\W\$ "
 fi
