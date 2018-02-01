@@ -9,7 +9,7 @@ pathadd() {
     fi
 }
 
-unalias ls
+unalias ls 2>/dev/null
 
 pathadd ~/.local/bin
 pathadd ~/go-latest/bin
