@@ -11,11 +11,13 @@ pathadd() {
 
 unalias ls 2>/dev/null
 
-pathadd ~/.local/bin
-pathadd ~/go-latest/bin
-pathadd ~/tcod/bin
-pathadd ~/bin
-pathadd ~/go/bin
+pathadd ~/.local/bin            # Some user installed apps end up here
+pathadd ~/Applications/Go/bin   # My preferred for GUI systems
+pathadd ~/Applications/Misc     #
+pathadd ~/Code/tcod/bin         # 
+pathadd ~/goroot/bin            # My preferred for servers
+pathadd ~/tcod/bin              #
+pathadd ~/bin                   #
 
 export HOST=`hostname | cut -d. -f1`
 export HOST=`python -c "print '$HOST'.lower()"`
@@ -50,6 +52,9 @@ Screen() {
 }
 
 if hash go 2>/dev/null ; then
+    if [ -d ~/Code ] ; then
+        export GOPATH=~/Code/go
+    fi
     lsgo() {
         find . -maxdepth 1 -not -path '*/Godeps/*' -not -path '*/vendor/*' -not -name "zzz_*" -not -name '*_GEN_*' -not -name '*.pb.go' \( -name '*.go' -or -name '*.got' -or -name '*.proto' \) | sed 's,^\./,,' | sort
     }
