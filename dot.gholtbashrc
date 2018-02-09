@@ -17,6 +17,7 @@ pathadd ~/Applications/Misc     #
 pathadd ~/Code/tcod/bin         # 
 pathadd ~/goroot/bin            # My preferred for servers
 pathadd ~/tcod/bin              #
+pathadd ~/go/bin                #
 pathadd ~/bin                   #
 
 export HOST=`hostname | cut -d. -f1`
