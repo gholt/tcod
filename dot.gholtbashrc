@@ -51,7 +51,7 @@ Screen() {
     screen -dRS `echo $HOST | sed "s/.*/\u&/"`
 }
 
-cdd() {
+ccd() {
     if [ -d ~/Code ] ; then
         cd `findtopnameddir ~/Code "$1"`
     else
