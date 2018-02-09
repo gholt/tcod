@@ -51,6 +51,14 @@ Screen() {
     screen -dRS `echo $HOST | sed "s/.*/\u&/"`
 }
 
+cdd() {
+    if [ -d ~/Code ] ; then
+        cd `findtopnameddir ~/Code "$1"`
+    else
+        cd `findtopnameddir ~ "$1"`
+    fi
+}
+
 if hash go 2>/dev/null ; then
     if [ -d ~/Code ] ; then
         export GOPATH=~/Code/go
