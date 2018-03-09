@@ -11,59 +11,33 @@ pathadd() {
 
 unalias ls 2>/dev/null
 
-pathadd ~/.local/bin            # Some user installed apps end up here
-pathadd ~/Applications/Go/bin   # My preferred for GUI systems
-pathadd ~/Applications/Misc     #
-pathadd ~/Code/tcod/bin         # 
-pathadd ~/goroot/bin            # My preferred for servers
-pathadd ~/tcod/bin              #
-pathadd ~/go/bin                #
-pathadd ~/bin                   #
+pathadd /opt/bin
+pathadd /opt/go/bin
+pathadd ~/bin
+pathadd ~/tcod/bin
 
 export HOST=`hostname | cut -d. -f1`
 export HOST=`python -c "print '$HOST'.lower()"`
-if [ "$HOST" = "ml304zfft3" ] ; then
-    HOST="rackspace"
-fi
 export HOST_TITLE=`python -c "print '$HOST'.title()"`
 
-if [ "$TERM" = "linux" ] ; then
-    export PS1="\u@$HOST:\W\$ "
-elif [ "$TERM" = "screen" ] ; then
-    export PS1="\u@$HOST:\W\$ "
-elif [ "$TERM" = "screen.xterm-256color" ] ; then
-    export PS1="\u@$HOST:\W\$ "
-else
-    export PS1="\[\e]0;\u@$HOST\a\]\u@$HOST:\W\$ "
-fi
-
+export PS1="\[\e]0;\u@$HOST\a\]\u@$HOST:\W\$ "
 export EDITOR=vi
-
-shufl() {
-    perl -MList::Util -e 'print List::Util::shuffle <>'
-}
-
-# This doesn't work on Linux yet; need to work on that sometime.
-duu() {
-    find -s . -depth 1 -not -name . -not -name .. -not -name .Trash -print0 | xargs -0 du -chs
-}
+export GREP_COLORS='sl=49;39:cx=49;39:mt=48;5;228;38;5;124;1;4:fn=49;35:ln=49;32:bn=49;32:se=49;36'
 
 Screen() {
     screen -dRS `echo $HOST | sed "s/.*/\u&/"`
 }
 
 ccd() {
-    if [ -d ~/Code ] ; then
-        cd `findtopnameddir ~/Code "$1"`
-    else
-        cd `findtopnameddir ~ "$1"`
-    fi
+    cd `findtopnameddir ~ "$1"`
+}
+
+sshk() {
+    eval `ssh-agent -s`
+    ssh-add ~/.ssh/*rsa
 }
 
 if hash go 2>/dev/null ; then
-    if [ -d ~/Code ] ; then
-        export GOPATH=~/Code/go
-    fi
     lsgo() {
         find . -maxdepth 1 -not -path '*/Godeps/*' -not -path '*/vendor/*' -not -name "zzz_*" -not -name '*_GEN_*' -not -name '*.pb.go' \( -name '*.go' -or -name '*.got' -or -name '*.proto' \) | sed 's,^\./,,' | sort
     }
@@ -78,19 +52,5 @@ if hash go 2>/dev/null ; then
     }
     gogo() {
         go fmt ./... && go vet ./... && go test --timeout=1m -cpu=1,3,7 ./... && go install ./...
-    }
-fi
-
-if [ -f ~/Python/bin/activate ] ; then
-    export VIRTUAL_ENV_DISABLE_PROMPT=true
-    source ~/Python/bin/activate
-    vipy() {
-        vim `find . -maxdepth 1 -name '*.py' | sed 's,^\./,,' | sort`
-    }
-    vipyr() {
-        vim `find . -name '*.py' | sed 's,^\./,,' | sort`
-    }
-    cleanc() {
-        find . -type f -name '*.py[co]' -exec rm {} \;
     }
 fi
