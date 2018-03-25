@@ -14,7 +14,6 @@ unalias ls 2>/dev/null
 pathadd /opt/bin
 pathadd /opt/go/bin
 pathadd ~/bin
-pathadd ~/tcod/bin
 
 export HOST=`hostname | cut -d. -f1`
 export HOST=`python -c "print '$HOST'.lower()"`

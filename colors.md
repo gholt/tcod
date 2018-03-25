@@ -6,9 +6,8 @@ Foreground             |   0 |   0 |   0 | `000000`
 Background             | 255 | 255 | 255 | `ffffff`
 Cursor Color           | 255 | 160 |   0 | `ffa000`
 Pointer Color          |   0 |   0 |   0 | `000000`
-Highlight Text Color   |   0 |   0 |   0 | `000000`
-Highlight Color        | 187 | 197 | 210 | `bbc5d2`
-Highlight Color Alt    | 164 | 205 | 255 | `a4cdff`
+Selection Text Color   |   0 |   0 |   0 | `000000`
+Selection Color        | 164 | 205 | 255 | `a4cdff`
 Color 0  Black         |   0 |   0 |   0 | `000000`
 Color 1  Red           | 160 |  60 |  60 | `a03c3c`
 Color 2  Green         |  80 | 160 |  80 | `50a050`
@@ -25,5 +24,3 @@ Color 12 Bright Blue   |  75 | 100 | 255 | `4b64ff`
 Color 13 Bright Purple | 200 | 100 | 255 | `c864ff`
 Color 14 Bright Cyan   | 100 | 200 | 255 | `64c8ff`
 Color 15 White         | 255 | 255 | 255 | `ffffff`
-
-Slack Colors: `#D9DFE5,#D9DFE5,#72879A,#FFFFFF,#D9DFE5,#000000,#50A050,#FFA000`
