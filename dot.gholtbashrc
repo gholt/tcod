@@ -26,7 +26,11 @@ export EDITOR=vi
 export GREP_COLORS='sl=49;39:cx=49;39:mt=48;5;228;38;5;124;1;4:fn=49;35:ln=49;32:bn=49;32:se=49;36'
 
 Screen() {
-    screen -dRS `echo $HOST | sed "s/.*/\u&/"`
+    if [ -z "$1" ] ; then
+        screen -dRS `echo $HOST | sed "s/.*/\u&/"`
+    else
+        screen -dRS "$1"
+    fi
 }
 
 ccd() {
