@@ -20,10 +20,41 @@ pathadd ~/go/bin
 export HOST=`hostname | cut -d. -f1`
 export HOST=`python -c "print '$HOST'.lower()"`
 export HOST_TITLE=`python -c "print '$HOST'.title()"`
-
-export PS1="\[\e]0;\u@$HOST\a\]\u@$HOST:\W\$ "
 export EDITOR=vi
 export GREP_COLORS='sl=49;39:cx=49;39:mt=48;5;228;38;5;124;1;4:fn=49;35:ln=49;32:bn=49;32:se=49;36'
+
+export PS1="
+\$(
+    if [ \"$USER\" = \"root\" ] ; then
+        printf '\e[0;97;101m ROOT @ $HOST '
+    else
+        printf '\e[1;37;40m \u@$HOST\e[1;34;40m '
+    fi
+)\e[1;37;43m\$(
+    if [ \"\W\" = \"/\" -o \"\W\" = \"~\" ] ; then
+        printf ' \W '
+    else
+        printf ' ./\W '
+    fi
+)\$(
+    a=\$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+    b=\$(git status 2>/dev/null | grep -q '^nothing to commit, working tree clean\$' || printf '*')
+    if [ -n \"\$a\" ] ; then
+        printf \"\e[1;37;42m \$b\$a\$b \"
+    fi
+)\$(
+    a=\$(kubectl config current-context 2>/dev/null)
+    if [ -n \"\$a\" ] ; then
+        printf \"\e[0;97;104m \$a \"
+    fi
+)\e[0m
+# "
+
+a() {
+    for i in {1..20} ; do
+        echo
+    done
+}
 
 Screen() {
     if [ -z "$1" ] ; then
@@ -40,6 +71,30 @@ ccd() {
 sshk() {
     eval `ssh-agent -s`
     ssh-add ~/.ssh/*rsa
+}
+
+showcolors() {
+	showcolorshelper(){
+	  printf "%-4s  " '' ${bgs[@]}
+	  echo
+	  for bold in ${bolds[@]}; do
+		for fg in ${fgs[@]}; do
+		  printf "%s;%s  " $bold $fg
+		  for bg in ${bgs[@]}; do
+			printf "\e[%s;%s;%sm%s\e[0m  " $bold $fg $bg "text"
+		  done
+		  echo
+		done
+	  done
+	}
+	bolds=( 0 1 )
+	fgs=( 3{0..7} )
+	bgs=( 4{0..8} )
+	showcolorshelper
+	bolds=( 0 )
+	fgs=( 9{0..7} )
+	bgs=( 10{0..8} )
+	showcolorshelper
 }
 
 if hash go 2>/dev/null ; then
