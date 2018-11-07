@@ -43,21 +43,69 @@ export PS1="
         printf \"\e[1;37;42m \$b\$a\$b \"
     fi
 )\$(
-    a=\$(kubectl config current-context 2>/dev/null)
+    a=\$(kubectl-config-current-context)
     if [ -n \"\$a\" ] ; then
         printf \"\e[0;97;104m \$a \"
     fi
 )\$(
-    a=\$(gcloud config get-value project 2>/dev/null)
-    b=\$(gcloud config get-value compute/region 2>/dev/null)
+    a=\$(gcloud-config-get-value-project)
+    b=\$(gcloud-config-get-value-compute-region)
     if [ -n \"\$a\" ] ; then
         printf \"\e[0;97;106m \$a \$b \"
     fi
 )\e[0m
 # "
 
-a() {
-    for i in {1..20} ; do
+kubectl-config-current-context() {
+    a=`kubectl config current-context 2>/dev/null`
+    if [ -n "$a" ] ; then
+        if [ -f ~/.kubectl-config-current-context-map ] ; then
+            source ~/.kubectl-config-current-context-map
+            if [ -n "${kubectl_config_current_context_map[$a]}" ] ; then
+                printf "${kubectl_config_current_context_map[$a]}"
+            else
+                printf "$a"
+            fi
+        else
+            printf "$a"
+        fi
+    fi
+}
+
+gcloud-config-get-value-project() {
+    a=`gcloud config get-value project 2>/dev/null`
+    if [ -n "$a" ] ; then
+        if [ -f ~/.gcloud-config-get-value-project-map ] ; then
+            source ~/.gcloud-config-get-value-project-map
+            if [ -n "${gcloud_config_get_value_project_map[$a]}" ] ; then
+                printf "${gcloud_config_get_value_project_map[$a]}"
+            else
+                printf "$a"
+            fi
+        else
+            printf "$a"
+        fi
+    fi
+}
+
+gcloud-config-get-value-compute-region() {
+    a=`gcloud config get-value compute/region 2>/dev/null`
+    if [ -n "$a" ] ; then
+        if [ -f ~/.gcloud-config-get-value-compute-region-map ] ; then
+            source ~/.gcloud-config-get-value-compute-region-map
+            if [ -n "${gcloud_config_get_value_compute_region_map[$a]}" ] ; then
+                printf "${gcloud_config_get_value_compute_region_map[$a]}"
+            else
+                printf "$a"
+            fi
+        else
+            printf "$a"
+        fi
+    fi
+}
+
+page() {
+    for i in {1..25} ; do
         echo
     done
 }
