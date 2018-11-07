@@ -47,6 +47,12 @@ export PS1="
     if [ -n \"\$a\" ] ; then
         printf \"\e[0;97;104m \$a \"
     fi
+)\$(
+    a=\$(gcloud config get-value project 2>/dev/null)
+    b=\$(gcloud config get-value compute/region 2>/dev/null)
+    if [ -n \"\$a\" ] ; then
+        printf \"\e[0;97;106m \$a \$b \"
+    fi
 )\e[0m
 # "
 
