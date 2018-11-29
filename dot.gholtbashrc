@@ -125,6 +125,7 @@ ccd() {
 }
 
 sshk() {
+    killall -q ssh-agent
     eval `ssh-agent -s`
     ssh-add ~/.ssh/*rsa
 }
