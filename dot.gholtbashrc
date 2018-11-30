@@ -22,92 +22,10 @@ export HOST=`python -c "print '$HOST'.lower()"`
 export HOST_TITLE=`python -c "print '$HOST'.title()"`
 export EDITOR=vi
 export GREP_COLORS='sl=49;39:cx=49;39:mt=48;5;228;38;5;124;1;4:fn=49;35:ln=49;32:bn=49;32:se=49;36'
+export PS1='\e[1;37;40m \u@$HOST \e[1;37;43m \W \e[0m\n# '
 
-export PS1="
-\$(
-    if [ \"$USER\" = \"root\" ] ; then
-        printf '\e[0;97;101m ROOT @ $HOST '
-    else
-        printf '\e[1;37;40m \u@$HOST\e[1;34;40m '
-    fi
-)\e[1;37;43m\$(
-    if [ \"\W\" = \"/\" -o \"\W\" = \"~\" ] ; then
-        printf ' \W '
-    else
-        printf ' ./\W '
-    fi
-)\$(
-    a=\$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
-    b=\$(git status 2>/dev/null | grep -q '^nothing to commit, working tree clean\$' || printf '*')
-    if [ -n \"\$a\" ] ; then
-        printf \"\e[1;37;42m \$b\$a\$b \"
-    fi
-)\$(
-    a=\$(kubectl-config-current-context)
-    if [ -n \"\$a\" ] ; then
-        printf \"\e[0;97;104m \$a \"
-    fi
-)\$(
-    a=\$(gcloud-config-get-value-project)
-    b=\$(gcloud-config-get-value-compute-region)
-    if [ -n \"\$a\" ] ; then
-        printf \"\e[0;97;106m \$a \$b \"
-    fi
-)\e[0m
-# "
-
-export PS1='# '
-
-kubectl-config-current-context() {
-    a=`kubectl config current-context 2>/dev/null`
-    if [ -n "$a" ] ; then
-        if [ -f ~/.kubectl-config-current-context-map ] ; then
-            source ~/.kubectl-config-current-context-map
-            if [ -n "${kubectl_config_current_context_map[$a]}" ] ; then
-                printf "${kubectl_config_current_context_map[$a]}"
-            else
-                printf "$a"
-            fi
-        else
-            printf "$a"
-        fi
-    fi
-}
-
-gcloud-config-get-value-project() {
-    a=`gcloud config get-value project 2>/dev/null`
-    if [ -n "$a" ] ; then
-        if [ -f ~/.gcloud-config-get-value-project-map ] ; then
-            source ~/.gcloud-config-get-value-project-map
-            if [ -n "${gcloud_config_get_value_project_map[$a]}" ] ; then
-                printf "${gcloud_config_get_value_project_map[$a]}"
-            else
-                printf "$a"
-            fi
-        else
-            printf "$a"
-        fi
-    fi
-}
-
-gcloud-config-get-value-compute-region() {
-    a=`gcloud config get-value compute/region 2>/dev/null`
-    if [ -n "$a" ] ; then
-        if [ -f ~/.gcloud-config-get-value-compute-region-map ] ; then
-            source ~/.gcloud-config-get-value-compute-region-map
-            if [ -n "${gcloud_config_get_value_compute_region_map[$a]}" ] ; then
-                printf "${gcloud_config_get_value_compute_region_map[$a]}"
-            else
-                printf "$a"
-            fi
-        else
-            printf "$a"
-        fi
-    fi
-}
-
-page() {
-    for i in {1..25} ; do
+p() {
+    for i in {1..20} ; do
         echo
     done
 }
@@ -118,10 +36,6 @@ Screen() {
     else
         screen -dRS "$1"
     fi
-}
-
-ccd() {
-    cd `findtopnameddir ~ "$1"`
 }
 
 sshk() {
@@ -174,12 +88,3 @@ if hash go 2>/dev/null ; then
         go fmt ./... && go vet ./... && go test --timeout=1m -cpu=1,3,7 ./... && go install ./...
     }
 fi
-
-prompt() {
-    if [ -z "$PROMPT_SECONDS" ] ; then
-        export PROMPT_SECONDS=$((SECONDS-1))
-    fi
-    if [ $SECONDS -gt $PROMPT_SECONDS ] ; then
-        export PROMPT_SECONDS=$((SECONDS+5))
-    fi
-}
