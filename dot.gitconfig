@@ -5,6 +5,6 @@
 	default = simple
 [core]
 	excludesfile = ~/.gitignore
-	pager = view -
-[color]
-	diff = never
+	pager = less -F -R -X
+[url "git@gitlab.internal.unity3d.com:"]
+	insteadOf = https://gitlab.internal.unity3d.com

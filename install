@@ -1,0 +1,17 @@
+#!/bin/bash
+set -e -x
+
+sudo apt install python tmux
+cd
+for src in tcod/dot.* ; do
+    dst="${src:8}"
+    if [ -L $dst ] ; then
+        rm $dst
+    fi
+    if [ -e $dst ] ; then
+        echo $dst
+        exit 1
+    fi
+    ln -s $src $dst
+done
+grep -q 'source ~/.gholtbashrc' ~/.bashrc || echo 'source ~/.gholtbashrc' >> ~/.bashrc

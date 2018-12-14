@@ -20,7 +20,7 @@ pathadd ~/go/bin
 export HOST=`hostname | cut -d. -f1`
 export HOST=`python -c "print '$HOST'.lower()"`
 export HOST_TITLE=`python -c "print '$HOST'.title()"`
-export EDITOR=vi
+export EDITOR=vim
 export GREP_COLORS='sl=49;39:cx=49;39:mt=48;5;228;38;5;124;1;4:fn=49;35:ln=49;32:bn=49;32:se=49;36'
 export PS1='\e[1;37;40m \u@$HOST \e[1;37;43m \W \e[0m\n# '
 
