@@ -68,6 +68,14 @@ showcolors() {
 	showcolorshelper
 }
 
+gitls() {
+    git status --porcelain | grep -v '^.D' | cut -c4-
+}
+
+gitfmt() {
+    gofmt -w -s `gitls | grep '.go$'`
+}
+
 if hash go 2>/dev/null ; then
     lsgo() {
         find . -maxdepth 1 -not -path '*/Godeps/*' -not -path '*/vendor/*' -not -name "zzz_*" -not -name '*_GEN_*' -not -name '*.pb.go' \( -name '*.go' -or -name '*.got' -or -name '*.proto' \) | sed 's,^\./,,' | sort
