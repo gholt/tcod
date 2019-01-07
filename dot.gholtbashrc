@@ -69,7 +69,7 @@ showcolors() {
 }
 
 gitls() {
-    git status --porcelain | grep -v '^D.\|^.D' | cut -c4-
+    git status --porcelain | grep -v '^.D' | cut -c4-
 }
 
 gitfmt() {
