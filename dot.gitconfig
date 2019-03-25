@@ -8,3 +8,5 @@
 	pager = less -F -R -X
 [url "git@gitlab.internal.unity3d.com:"]
 	insteadOf = https://gitlab.internal.unity3d.com
+[url "git@gitlab.cds.internal.unity3d.com:"]
+	insteadOf = https://gitlab.cds.internal.unity3d.com
