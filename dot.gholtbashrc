@@ -27,6 +27,7 @@ export PS1='\e[1;37;40m \u@$HOST \e[1;37;43m \W \e[0m\n# '
 settitle() {
     echo -en "\033]0;$*\007"
 }
+settitle bash
 
 p() {
     for i in {1..20} ; do
