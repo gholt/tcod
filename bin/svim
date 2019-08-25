@@ -1,0 +1,3 @@
+#!/bin/bash
+
+vim -n -i NONE -c "set noundofile" $@
