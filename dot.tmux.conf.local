@@ -101,7 +101,7 @@ tmux_conf_theme_status_attr='none'
 #     - #{username}
 #     - #{username_ssh}
 #tmux_conf_theme_terminal_title='#h ❐ #S ● #I #W'
-tmux_conf_theme_terminal_title='#h'
+tmux_conf_theme_terminal_title='tmux: #T'
 
 # window status style
 #   - built-in variables are:
@@ -300,3 +300,7 @@ bind C-a send-prefix
 
 # turn off status line
 set -g status off
+
+#set -g allow-rename on
+#set-option -g set-titles on
+#set-option -g set-titles-string "#S / #W #T"

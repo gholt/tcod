@@ -14,4 +14,15 @@ for src in tcod/dot.* ; do
     fi
     ln -s $src $dst
 done
+for src in tcod/bin/* ; do
+    dst="bin/${src:9}"
+    if [ -L $dst ] ; then
+        rm $dst
+    fi
+    if [ -e $dst ] ; then
+        echo $dst
+        exit 1
+    fi
+    ln -s ../$src $dst
+done
 grep -q 'source ~/.gholtbashrc' ~/.bashrc || echo 'source ~/.gholtbashrc' >> ~/.bashrc
