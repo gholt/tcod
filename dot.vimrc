@@ -242,6 +242,14 @@ function! GHolt_tw()
 endfunction
 nnoremap <Leader>w :call GHolt_tw()<CR>
 
+" Gets folding set up but turned off by default.
+" zi = toggle on/off
+" za = toggle fold under cursor, one level
+" zA = toggle fold under cursor, all levels
+" zC = close fold under cursor -- visual select area to close folds within
+" Probably easier ways to do things, but the above is what I've become used to.
+set foldmethod=syntax
+set nofoldenable
 
 " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " " "
 " General Tips
