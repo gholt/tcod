@@ -183,7 +183,7 @@ function! GHolt_gobuild()
 endfunction
 map <Leader>g :call GHolt_gobuild()<CR>
 
-" Golang: Maps \G to run: gogo (which is go fmt, vet, test, install)
+" Golang: Maps \G to run: gogo (which is go vet, test, install)
 function! GHolt_gobuildfull()
     set lazyredraw
     cclose
@@ -202,26 +202,6 @@ function! GHolt_gobuildfull()
     endif
 endfunction
 map <Leader>G :call GHolt_gobuildfull()<CR>
-
-" Golang:: Maps \l to run golint.
-function! GHolt_golint()
-    set lazyredraw
-    cclose
-    let l:grepformat_orig=&grepformat
-    let l:grepprg_orig=&grepprg
-    let &grepformat="%f:%l:%c: %m"
-    let &grepprg="golint ./..."
-    silent grep
-    let &grepformat=l:grepformat_orig
-    let &grepprg=l:grepprg_orig
-    cwindow
-    set nolazyredraw
-    redraw!
-    if getqflist() == []
-        echo "golint clean"
-    endif
-endfunction
-map <Leader>l :call GHolt_golint()<CR>
 
 " Maps \p to toggling paste and nopaste modes. This lets you turn off
 " auto-indenting, etc. while pasting in a big block of text.
